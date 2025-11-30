@@ -1,0 +1,175 @@
+/* frontend/src/components/common/Navbar/Navbar.module.css */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem 0;
+  z-index: var(--z-nav);
+  transition: var(--transition-normal);
+}
+
+.navbar.scrolled {
+  background: rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  padding: 1rem 0;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: var(--transition-fast);
+  z-index: 11;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.navLinks {
+  display: flex;
+  gap: var(--spacing-md);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navLinks button,
+.navLinks a {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  font-family: var(--font-primary);
+  position: relative;
+}
+
+.navLinks button::after,
+.navLinks a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 80%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+  transition: var(--transition-fast);
+}
+
+.navLinks button:hover,
+.navLinks a:hover {
+  color: var(--primary-color);
+}
+
+.navLinks button:hover::after,
+.navLinks a:hover::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.logoutBtn {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) !important;
+  color: white !important;
+  padding: 0.6rem 1.5rem !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.logoutBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
+}
+
+.logoutBtn::after {
+  display: none;
+}
+
+.mobileMenuButton {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 11;
+}
+
+.mobileMenuButton span {
+  width: 30px;
+  height: 3px;
+  background: var(--text-color);
+  border-radius: 10px;
+  transition: var(--transition-normal);
+  transform-origin: center;
+}
+
+.mobileMenuButton span.open:nth-child(1) {
+  transform: rotate(45deg) translateY(8px);
+}
+
+.mobileMenuButton span.open:nth-child(2) {
+  opacity: 0;
+}
+
+.mobileMenuButton span.open:nth-child(3) {
+  transform: rotate(-45deg) translateY(-8px);
+}
+
+/* Responsive */
+@media (max-width: 968px) {
+  .mobileMenuButton {
+    display: flex;
+  }
+
+  .navLinks {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 70%;
+    max-width: 300px;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.98);
+    backdrop-filter: blur(10px);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-lg);
+    transition: right 0.4s ease;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .navLinks.mobileOpen {
+    right: 0;
+  }
+
+  .navLinks button,
+  .navLinks a {
+    font-size: 1.2rem;
+    width: 100%;
+    text-align: center;
+  }
+}
