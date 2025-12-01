@@ -27,7 +27,7 @@ const Footer = () => {
               Crafting digital experiences with passion and precision.
             </p>
             <div className={styles.socialLinks}>
-              
+              <a
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -35,7 +35,7 @@ const Footer = () => {
               >
                 GitHub
               </a>
-              
+              <a
                 href="https://linkedin.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -43,7 +43,7 @@ const Footer = () => {
               >
                 LinkedIn
               </a>
-              
+              <a
                 href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"

@@ -1,0 +1,9 @@
+/* frontend/src/pages/Home/Home.module.css */
+.main {
+  position: relative;
+}
+
+.main section {
+  position: relative;
+  z-index: 1;
+}

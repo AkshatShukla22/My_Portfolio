@@ -11,6 +11,14 @@ const ProjectsSection = ({ data }) => {
   const sectionRef = useRef(null);
   const cardsRef = useRef([]);
 
+  // Debug: Log the data
+  useEffect(() => {
+    console.log('ProjectsSection data:', data);
+    console.log('Data type:', typeof data);
+    console.log('Is array?', Array.isArray(data));
+    console.log('Data length:', data?.length);
+  }, [data]);
+
   useEffect(() => {
     if (!data || data.length === 0) return;
 
@@ -31,23 +39,33 @@ const ProjectsSection = ({ data }) => {
     return () => ctx.revert();
   }, [data]);
 
-  if (!data || data.length === 0) return null;
-
+  // Always render the section, even if no projects
   return (
     <section ref={sectionRef} className={styles.projectsSection} id="projects">
       <div className={styles.container}>
         <h2 className={styles.title}>Featured Projects</h2>
         <p className={styles.subtitle}>Explore my recent work and creations</p>
 
-        <div className={styles.projectsGrid}>
-          {data.map((project, index) => (
-            <ProjectCard
-              key={project._id}
-              project={project}
-              ref={(el) => (cardsRef.current[index] = el)}
-            />
-          ))}
-        </div>
+        {!data || data.length === 0 ? (
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '3rem', 
+            color: 'var(--text-secondary)',
+            fontSize: '1.1rem'
+          }}>
+            No projects available yet. Check back soon!
+          </div>
+        ) : (
+          <div className={styles.projectsGrid}>
+            {data.map((project, index) => (
+              <ProjectCard
+                key={project._id}
+                project={project}
+                ref={(el) => (cardsRef.current[index] = el)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

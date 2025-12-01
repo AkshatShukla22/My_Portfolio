@@ -8,7 +8,9 @@ import { deleteFromCloudinary } from '../utils/cloudinaryUpload.js';
 export const getProjects = async (req, res) => {
   try {
     const projects = await Project.find().sort({ order: 1, createdAt: -1 });
-    res.json(projects);
+    
+    // Return with consistent format: { data: [...] }
+    res.json({ data: projects });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -25,7 +27,7 @@ export const getProjectById = async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
 
-    res.json(project);
+    res.json({ data: project });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -37,7 +39,7 @@ export const getProjectById = async (req, res) => {
 export const createProject = async (req, res) => {
   try {
     const project = await Project.create(req.body);
-    res.status(201).json(project);
+    res.status(201).json({ data: project });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -71,7 +73,7 @@ export const updateProject = async (req, res) => {
     Object.assign(project, req.body);
     await project.save();
 
-    res.json(project);
+    res.json({ data: project });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

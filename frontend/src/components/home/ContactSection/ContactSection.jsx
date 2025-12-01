@@ -175,7 +175,7 @@ const ContactSection = () => {
             <div className={styles.socialLinks}>
               <h3>Connect With Me</h3>
               <div className={styles.socialIcons}>
-                
+                <a
                   href="https://github.com"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -183,7 +183,7 @@ const ContactSection = () => {
                 >
                   GitHub
                 </a>
-                
+                <a
                   href="https://linkedin.com"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -191,7 +191,7 @@ const ContactSection = () => {
                 >
                   LinkedIn
                 </a>
-                
+                <a
                   href="https://twitter.com"
                   target="_blank"
                   rel="noopener noreferrer"

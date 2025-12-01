@@ -1,6 +1,6 @@
 // frontend/src/components/common/Navbar/Navbar.jsx
 import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useAuth } from '../../../context/AuthContext';
 import styles from './Navbar.module.css';
@@ -10,6 +10,7 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const navRef = useRef(null);
 
   useEffect(() => {
@@ -21,15 +22,25 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Animate navbar on mount AND on route change
   useEffect(() => {
-    gsap.from(navRef.current, {
-      y: -100,
-      opacity: 0,
-      duration: 1,
-      ease: 'power3.out',
-      delay: 0.2,
-    });
-  }, []);
+    if (navRef.current) {
+      gsap.fromTo(
+        navRef.current,
+        {
+          y: -100,
+          opacity: 0,
+        },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: 0.1,
+        }
+      );
+    }
+  }, [location.pathname]); // Re-run when route changes
 
   const handleLogout = () => {
     logout();
@@ -104,4 +115,5 @@ const Navbar = () => {
     </nav>
   );
 };
+
 export default Navbar;

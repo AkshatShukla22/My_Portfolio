@@ -18,9 +18,18 @@ export const getHero = async (req, res) => {
       });
     }
 
-    res.json(hero);
+    console.log('Sending hero data:', hero);
+
+    res.json({
+      success: true,
+      data: hero,
+    });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Get hero error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: error.message 
+    });
   }
 };
 

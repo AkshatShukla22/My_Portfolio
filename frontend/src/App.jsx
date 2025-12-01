@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom';
 import { useTheme } from './context/ThemeContext';
 import Loader from './components/common/Loader/Loader';
 import ScrollProgress from './components/common/ScrollProgress/ScrollProgress';
-import './App.css';
+// import './App.css';
 
 function App() {
   const { theme, loading } = useTheme();

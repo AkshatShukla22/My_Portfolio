@@ -69,7 +69,7 @@ const ProjectCard = forwardRef(({ project }, ref) => {
 
         <div className={styles.projectLinks}>
           {project.githubLink && (
-            
+            <a
               href={project.githubLink}
               target="_blank"
               rel="noopener noreferrer"
@@ -80,7 +80,7 @@ const ProjectCard = forwardRef(({ project }, ref) => {
             </a>
           )}
           {project.liveLink && (
-            
+            <a
               href={project.liveLink}
               target="_blank"
               rel="noopener noreferrer"

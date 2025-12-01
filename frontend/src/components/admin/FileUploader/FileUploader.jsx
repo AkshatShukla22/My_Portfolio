@@ -1,12 +1,19 @@
 // frontend/src/components/admin/FileUploader/FileUploader.jsx
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import api from '../../../utils/api';
 import styles from './FileUploader.module.css';
 
 const FileUploader = ({ folder = 'portfolio', onUploadSuccess, currentImage }) => {
   const [uploading, setUploading] = useState(false);
-  const [preview, setPreview] = useState(currentImage?.url || null);
+  const [preview, setPreview] = useState(null);
   const fileInputRef = useRef(null);
+
+  // Update preview when currentImage changes
+  useEffect(() => {
+    if (currentImage?.url) {
+      setPreview(currentImage.url);
+    }
+  }, [currentImage]);
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -25,7 +32,7 @@ const FileUploader = ({ folder = 'portfolio', onUploadSuccess, currentImage }) =
       return;
     }
 
-    // Show preview
+    // Show preview immediately
     const reader = new FileReader();
     reader.onloadend = () => {
       setPreview(reader.result);
@@ -39,16 +46,24 @@ const FileUploader = ({ folder = 'portfolio', onUploadSuccess, currentImage }) =
       formData.append('file', file);
       formData.append('folder', folder);
 
+      console.log('Uploading file:', file.name);
+
       const { data } = await api.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      console.log('Upload response:', data);
+
+      // Call success callback with the uploaded image data
       onUploadSuccess(data.data);
+      
+      alert('File uploaded successfully!');
     } catch (error) {
       console.error('Upload error:', error);
       alert(error.response?.data?.message || 'Failed to upload file');
+      // Revert preview on error
       setPreview(currentImage?.url || null);
     } finally {
       setUploading(false);
@@ -73,13 +88,15 @@ const FileUploader = ({ folder = 'portfolio', onUploadSuccess, currentImage }) =
               type="button"
               onClick={() => fileInputRef.current?.click()}
               className={styles.changeButton}
+              disabled={uploading}
             >
-              Change
+              {uploading ? 'Uploading...' : 'Change'}
             </button>
             <button
               type="button"
               onClick={handleRemove}
               className={styles.removeButton}
+              disabled={uploading}
             >
               Remove
             </button>

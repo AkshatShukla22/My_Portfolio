@@ -28,7 +28,10 @@ export const ContentProvider = ({ children }) => {
   }, []);
 
   const fetchAllContent = async () => {
+    setLoading(true);
     try {
+      console.log('🔄 Fetching all content...');
+      
       const [
         heroRes,
         journeyRes,
@@ -39,15 +42,49 @@ export const ContentProvider = ({ children }) => {
         certificationsRes,
         blogsRes,
       ] = await Promise.all([
-        api.get('/hero'),
-        api.get('/journey'),
-        api.get('/timeline'),
-        api.get('/skills'),
-        api.get('/services'),
-        api.get('/projects'),
-        api.get('/certifications'),
-        api.get('/blogs?published=true'),
+        api.get('/hero').catch(err => {
+          console.error('Hero fetch error:', err);
+          return { data: { data: null } };
+        }),
+        api.get('/journey').catch(err => {
+          console.error('Journey fetch error:', err);
+          return { data: { data: null } };
+        }),
+        api.get('/timeline').catch(err => {
+          console.error('Timeline fetch error:', err);
+          return { data: { data: null } };
+        }),
+        api.get('/skills').catch(err => {
+          console.error('Skills fetch error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/services').catch(err => {
+          console.error('Services fetch error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/projects').catch(err => {
+          console.error('Projects fetch error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/certifications').catch(err => {
+          console.error('Certifications fetch error:', err);
+          return { data: { data: [] } };
+        }),
+        api.get('/blogs?published=true').catch(err => {
+          console.error('Blogs fetch error:', err);
+          return { data: { data: [] } };
+        }),
       ]);
+
+      console.log('✅ Content fetched successfully:');
+      console.log('Hero:', heroRes.data.data);
+      console.log('Journey:', journeyRes.data.data);
+      console.log('Timeline:', timelineRes.data.data);
+      console.log('Skills:', skillsRes.data.data);
+      console.log('Services:', servicesRes.data.data);
+      console.log('Projects:', projectsRes.data.data);
+      console.log('Certifications:', certificationsRes.data.data);
+      console.log('Blogs:', blogsRes.data.data);
 
       setHero(heroRes.data.data);
       setJourney(journeyRes.data.data);
@@ -57,8 +94,10 @@ export const ContentProvider = ({ children }) => {
       setProjects(projectsRes.data.data);
       setCertifications(certificationsRes.data.data);
       setBlogs(blogsRes.data.data);
+      
+      console.log('✅ All state updated successfully');
     } catch (error) {
-      console.error('Failed to fetch content:', error);
+      console.error('❌ Failed to fetch content:', error);
     } finally {
       setLoading(false);
     }
