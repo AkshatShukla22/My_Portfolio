@@ -10,6 +10,11 @@ const skillSchema = new mongoose.Schema({
     url: String,
     publicId: String,
   },
+  // NEW: Add Font Awesome icon
+  fontAwesomeIcon: {
+    type: String,
+    default: '',
+  },
   category: {
     type: String,
     enum: ['frontend', 'backend', 'database', 'tools', 'other'],

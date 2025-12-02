@@ -6,59 +6,57 @@ import styles from './JourneySection.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const BikeAnimation = ({ bikeImage, speed = 1 }) => {
+const BikeAnimation = ({ bikeImage, bikeIcon = 'fas fa-bicycle', speed = 1, containerRef }) => {
   const bikeRef = useRef(null);
 
   useEffect(() => {
-    if (!bikeRef.current) return;
+    if (!bikeRef.current || !containerRef?.current) return;
 
     const bike = bikeRef.current;
-    const parent = bike.parentElement;
+    const container = containerRef.current.querySelector('.journeyContainer');
 
-    if (!parent) return;
+    if (!container) return;
 
-    // Animate bike moving along the road based on scroll
+    // Get the actual road element to calculate exact width
+    const road = container.querySelector('[class*="road"]');
+    if (!road) return;
+
+    // Animate bike moving along the road based on scroll, synced with progress bar
     const scrollAnimation = gsap.to(bike, {
       x: () => {
-        const parentWidth = parent.offsetWidth;
+        const roadRect = road.getBoundingClientRect();
         const bikeWidth = bike.offsetWidth;
-        return parentWidth - bikeWidth - 50; // 50px padding from right
+        // Calculate exact distance the bike should travel
+        // Road width minus bike width to stop at the end
+        return roadRect.width - bikeWidth;
       },
       ease: 'none',
       scrollTrigger: {
-        trigger: parent,
+        trigger: container,
         start: 'top center',
         end: 'bottom center',
-        scrub: speed,
+        scrub: 1,
       },
-    });
-
-    // Add slight bounce/wobble
-    const bounceAnimation = gsap.to(bike, {
-      y: -10,
-      duration: 0.5,
-      yoyo: true,
-      repeat: -1,
-      ease: 'sine.inOut',
     });
 
     return () => {
       scrollAnimation.kill();
-      bounceAnimation.kill();
       ScrollTrigger.getAll().forEach((trigger) => {
-        if (trigger.trigger === parent) {
+        if (trigger.trigger === container) {
           trigger.kill();
         }
       });
     };
-  }, [speed]);
+  }, [speed, containerRef]);
 
   return (
     <div ref={bikeRef} className={styles.bike}>
       {bikeImage ? (
         <img src={bikeImage} alt="Journey" />
       ) : (
-        <div className={styles.defaultBike}>🚴</div>
+        <div className={styles.defaultBike}>
+          <i className={bikeIcon}></i>
+        </div>
       )}
     </div>
   );

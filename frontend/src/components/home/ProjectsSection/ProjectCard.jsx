@@ -1,16 +1,17 @@
 // frontend/src/components/home/ProjectsSection/ProjectCard.jsx
 import { forwardRef, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import styles from './ProjectsSection.module.css';
 
 const ProjectCard = forwardRef(({ project }, ref) => {
+  const navigate = useNavigate();
   const imageRef = useRef(null);
   const overlayRef = useRef(null);
 
   const handleMouseEnter = () => {
     gsap.to(imageRef.current, {
-      scale: 1.1,
+      scale: 1.08,
       duration: 0.4,
       ease: 'power2.out',
     });
@@ -34,13 +35,17 @@ const ProjectCard = forwardRef(({ project }, ref) => {
     });
   };
 
+  const handleCardClick = () => {
+    navigate(`/projects/${project._id}`);
+  };
+
   return (
-    <Link
-      to={`/projects/${project._id}`}
+    <div
       ref={ref}
       className={styles.projectCard}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
     >
       <div className={styles.projectImage}>
         <img
@@ -49,7 +54,7 @@ const ProjectCard = forwardRef(({ project }, ref) => {
           alt={project.title}
         />
         <div ref={overlayRef} className={styles.projectOverlay}>
-          <span className={styles.viewProject}>View Project →</span>
+          <span className={styles.viewProject}>View Details</span>
         </div>
       </div>
 
@@ -59,11 +64,16 @@ const ProjectCard = forwardRef(({ project }, ref) => {
 
         {project.techStack && project.techStack.length > 0 && (
           <div className={styles.techStack}>
-            {project.techStack.map((tech, index) => (
+            {project.techStack.slice(0, 4).map((tech, index) => (
               <span key={index} className={styles.techBadge}>
                 {tech}
               </span>
             ))}
+            {project.techStack.length > 4 && (
+              <span className={styles.techBadge}>
+                +{project.techStack.length - 4}
+              </span>
+            )}
           </div>
         )}
 
@@ -75,8 +85,10 @@ const ProjectCard = forwardRef(({ project }, ref) => {
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className={styles.projectLink}
+              title="View Source Code"
             >
-              GitHub
+              <i className="fab fa-github"></i>
+              <span>Code</span>
             </a>
           )}
           {project.liveLink && (
@@ -86,13 +98,24 @@ const ProjectCard = forwardRef(({ project }, ref) => {
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
               className={styles.projectLink}
+              title="View Live Demo"
             >
-              Live Demo
+              <i className="fas fa-external-link-alt"></i>
+              <span>Live</span>
             </a>
+          )}
+          {!project.githubLink && !project.liveLink && (
+            <div
+              className={styles.projectLink}
+              style={{ opacity: 0.5, cursor: 'default' }}
+            >
+              <i className="fas fa-info-circle"></i>
+              <span>Details</span>
+            </div>
           )}
         </div>
       </div>
-    </Link>
+    </div>
   );
 });
 

@@ -1,5 +1,6 @@
 // backend/controllers/uploadController.js
 import { uploadToCloudinary, deleteFromCloudinary } from '../utils/cloudinaryUpload.js';
+import fs from 'fs';
 
 // @desc    Upload single file
 // @route   POST /api/upload
@@ -13,17 +14,36 @@ export const uploadFile = async (req, res) => {
       });
     }
 
+    console.log('📁 File received:', req.file.originalname);
+    console.log('📂 Upload folder:', req.body.folder || 'portfolio');
+
     const folder = req.body.folder || 'portfolio';
+    
+    // Upload to Cloudinary with unique filename
+    const timestamp = Date.now();
     const result = await uploadToCloudinary(req.file.path, folder);
+
+    console.log('✅ Cloudinary upload success:', result);
 
     res.json({
       success: true,
       data: result,
     });
   } catch (error) {
+    console.error('❌ Upload error:', error);
+    
+    // Clean up temp file on error
+    if (req.file && req.file.path && fs.existsSync(req.file.path)) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (unlinkError) {
+        console.error('Failed to delete temp file:', unlinkError);
+      }
+    }
+
     res.status(500).json({ 
       success: false,
-      message: error.message 
+      message: error.message || 'Failed to upload file'
     });
   }
 };
@@ -52,6 +72,7 @@ export const uploadMultipleFiles = async (req, res) => {
       data: results,
     });
   } catch (error) {
+    console.error('❌ Multiple upload error:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
@@ -82,6 +103,7 @@ export const deleteFile = async (req, res) => {
       message: 'File deleted successfully' 
     });
   } catch (error) {
+    console.error('❌ Delete error:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 

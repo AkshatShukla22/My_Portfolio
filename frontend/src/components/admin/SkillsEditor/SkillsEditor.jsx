@@ -16,6 +16,7 @@ const SkillsEditor = () => {
     proficiency: 80,
     displayInMarquee: true,
     order: 0,
+    fontAwesomeIcon: '', // NEW
   });
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +45,7 @@ const SkillsEditor = () => {
       proficiency: skill.proficiency || 80,
       displayInMarquee: skill.displayInMarquee !== false,
       order: skill.order || 0,
+      fontAwesomeIcon: skill.fontAwesomeIcon || '', // NEW
     });
     setLogo(skill.logo);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -104,6 +106,7 @@ const SkillsEditor = () => {
       proficiency: 80,
       displayInMarquee: true,
       order: 0,
+      fontAwesomeIcon: '',
     });
     setLogo(null);
   };
@@ -205,17 +208,65 @@ const SkillsEditor = () => {
                   onChange={handleChange}
                   style={{ width: 'auto', margin: 0 }}
                 />
-                <span>Display in Auto-Scrolling Marquee</span>
+                <span>Display in Marquee</span>
               </label>
             </div>
           </div>
 
+          {/* NEW: Font Awesome Icon Section */}
           <div className={styles.formSection}>
-            <h3>Skill Logo</h3>
+            <h3>Marquee Icon (Font Awesome)</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              Upload SVG or PNG logo for best quality
+              Enter Font Awesome class (e.g., "fab fa-react", "fab fa-html5", "fab fa-css3-alt")
+              <br />
+              <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>
+                Find icons here →
+              </a>
+            </p>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="fontAwesomeIcon">Font Awesome Class</label>
+              <input
+                type="text"
+                id="fontAwesomeIcon"
+                name="fontAwesomeIcon"
+                value={formData.fontAwesomeIcon}
+                onChange={handleChange}
+                placeholder="fab fa-react"
+              />
+            </div>
+
+            {/* Preview Icon */}
+            {formData.fontAwesomeIcon && (
+              <div style={{ 
+                marginTop: '1rem', 
+                padding: '2rem',
+                background: 'rgba(255, 255, 255, 0.03)',
+                borderRadius: 'var(--radius-md)',
+                textAlign: 'center'
+              }}>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Preview:</p>
+                <i 
+                  className={formData.fontAwesomeIcon}
+                  style={{ 
+                    fontSize: '4rem',
+                    background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}
+                ></i>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.formSection}>
+            <h3>Skill Logo (Optional - for grid display)</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+              Upload image for the skills grid section
             </p>
             <FileUploader
+              key={editingSkill?._id || 'new'}
               folder="skills"
               onUploadSuccess={(result) => setLogo(result)}
               currentImage={logo}
@@ -278,7 +329,20 @@ const SkillsEditor = () => {
                         textAlign: 'center',
                       }}
                     >
-                      {skill.logo?.url && (
+                      {skill.fontAwesomeIcon ? (
+                        <i 
+                          className={skill.fontAwesomeIcon}
+                          style={{
+                            fontSize: '3rem',
+                            display: 'block',
+                            marginBottom: '0.5rem',
+                            background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                          }}
+                        ></i>
+                      ) : skill.logo?.url ? (
                         <img
                           src={skill.logo.url}
                           alt={skill.name}
@@ -287,8 +351,27 @@ const SkillsEditor = () => {
                             height: '60px',
                             objectFit: 'contain',
                             marginBottom: '0.5rem',
+                            display: 'block',
+                            marginLeft: 'auto',
+                            marginRight: 'auto',
                           }}
                         />
+                      ) : (
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
+                          borderRadius: '50%',
+                          background: 'linear-gradient(135deg, var(--primary-color), var(--secondary-color))',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '1.5rem',
+                          fontWeight: '700',
+                          color: 'white',
+                          margin: '0 auto 0.5rem',
+                        }}>
+                          {skill.name.charAt(0)}
+                        </div>
                       )}
 
                       <h5 style={{ color: 'var(--text-color)', marginBottom: '0.5rem' }}>

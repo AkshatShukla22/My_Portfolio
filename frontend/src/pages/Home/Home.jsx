@@ -26,23 +26,31 @@ const Home = () => {
     projects, 
     certifications, 
     blogs, 
-    loading 
+    loading,
+    isInitialized
   } = useContent();
   
   const smoothScrollRef = useRef(null);
 
+  // Initialize smooth scroll ONLY after content is loaded
   useEffect(() => {
-    // Initialize GSAP smooth scroll
-    smoothScrollRef.current = initSmoothScroll();
+    if (!isInitialized || loading) return;
+
+    // Wait a bit for all content to render
+    const timer = setTimeout(() => {
+      smoothScrollRef.current = initSmoothScroll();
+    }, 300);
 
     return () => {
+      clearTimeout(timer);
       if (smoothScrollRef.current) {
         smoothScrollRef.current.kill();
       }
     };
-  }, []);
+  }, [isInitialized, loading]);
 
-  if (loading) {
+  // Show loader until content is ready
+  if (!isInitialized || loading) {
     return <Loader />;
   }
 
@@ -52,13 +60,16 @@ const Home = () => {
         <Navbar />
         
         <main className={styles.main}>
-          <HeroSection data={hero} />
-          <JourneySection data={journey} />
-          <TimelineSection data={timeline} />
-          <SkillsSection data={skills} />
-          <ServicesSection data={services} />
+          {hero && <HeroSection data={hero} />}
+          {journey && <JourneySection data={journey} />}
+          {timeline && <TimelineSection data={timeline} />}
+          {skills && skills.length > 0 && <SkillsSection data={skills} />}
+          {services && services.length > 0 && <ServicesSection data={services} />}
+          
+          {/* Always render ProjectsSection */}
           <ProjectsSection data={projects} />
-          <CertificationsSection data={certifications} />
+          
+          {certifications && certifications.length > 0 && <CertificationsSection data={certifications} />}
           {blogs && blogs.length > 0 && <BlogSection data={blogs} />}
           <ContactSection />
         </main>

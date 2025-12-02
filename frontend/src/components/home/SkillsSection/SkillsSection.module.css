@@ -3,6 +3,7 @@
   padding: var(--spacing-xl) var(--spacing-md);
   background: linear-gradient(180deg, var(--bg-color) 0%, rgba(139, 92, 246, 0.05) 100%);
   overflow: hidden;
+  min-height: 400px;
 }
 
 .container {
@@ -27,131 +28,414 @@
   overflow: hidden;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.05);
-border-radius: var(--radius-lg);
-padding: var(--spacing-md) 0;
-margin-bottom: var(--spacing-xl);
-position: relative;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-xl);
+  position: relative;
 }
+
 .marquee::before,
 .marquee::after {
-content: '';
-position: absolute;
-top: 0;
-width: 100px;
-height: 100%;
-z-index: 2;
-pointer-events: none;
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
 }
+
 .marquee::before {
-left: 0;
-background: linear-gradient(90deg, var(--bg-color), transparent);
+  left: 0;
+  background: linear-gradient(90deg, var(--bg-color), transparent);
 }
+
 .marquee::after {
-right: 0;
-background: linear-gradient(-90deg, var(--bg-color), transparent);
+  right: 0;
+  background: linear-gradient(-90deg, var(--bg-color), transparent);
 }
+
 .marqueeContent {
-display: flex;
-gap: var(--spacing-lg);
-padding: 0 var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: 0 var(--spacing-md);
+  will-change: transform;
 }
+
 .marqueeItem {
-flex-shrink: 0;
-width: 80px;
-height: 80px;
-display: flex;
-align-items: center;
-justify-content: center;
-background: rgba(255, 255, 255, 0.03);
-border: 1px solid rgba(255, 255, 255, 0.1);
-border-radius: var(--radius-md);
-padding: var(--spacing-sm);
-transition: var(--transition-fast);
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  transition: var(--transition-fast);
 }
+
 .marqueeItem:hover {
-background: rgba(255, 255, 255, 0.05);
-border-color: var(--primary-color);
-transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
 }
+
 .marqueeItem img {
-width: 100%;
-height: 100%;
-object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
+
 .marqueeText {
-color: var(--text-color);
-font-size: 0.9rem;
-font-weight: 600;
-text-align: center;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
 }
+
 /* Categories */
 .categories {
-display: flex;
-flex-direction: column;
-gap: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
 }
+
 .category h3 {
-font-size: 1.5rem;
-font-weight: 700;
-color: var(--primary-color);
-margin-bottom: var(--spacing-md);
-text-transform: capitalize;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  text-transform: capitalize;
 }
+
 .skillGrid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-gap: var(--spacing-md);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--spacing-md);
 }
+
 .skillCard {
-background: rgba(255, 255, 255, 0.03);
-backdrop-filter: blur(10px);
-border: 1px solid rgba(255, 255, 255, 0.1);
-border-radius: var(--radius-md);
-padding: var(--spacing-md);
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: var(--spacing-sm);
-transition: var(--transition-normal);
-text-align: center;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: var(--transition-normal);
+  text-align: center;
+  min-height: 180px;
 }
+
 .skillCard:hover {
-background: rgba(255, 255, 255, 0.05);
-border-color: var(--primary-color);
-transform: translateY(-5px);
-box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
 }
+
 .skillCard img {
-width: 60px;
-height: 60px;
-object-fit: contain;
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
 }
-.skillCard span {
-color: var(--text-color);
-font-weight: 600;
-font-size: 0.95rem;
+
+.placeholderLogo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
 }
+
+.skillName {
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: auto;
+}
+
 .proficiency {
-width: 100%;
-height: 6px;
-background: rgba(255, 255, 255, 0.1);
-border-radius: 10px;
-overflow: hidden;
-margin-top: var(--spacing-xs);
+  width: 100%;
+  margin-top: var(--spacing-xs);
 }
+
 .proficiencyBar {
-height: 100%;
-background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-border-radius: 10px;
-transition: width 1s ease;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
 }
+
+.proficiencyBar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: inherit;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 10px;
+}
+
+.proficiencyText {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
-.skillGrid {
-grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  .skillGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .marqueeItem {
+    width: 60px;
+    height: 60px;
+  }
+
+  .skillCard {
+    min-height: 150px;
+  }
+
+  .skillCard img,
+  .placeholderLogo {
+    width: 50px;
+    height: 50px;
+  }
+}/* frontend/src/components/home/SkillsSection/SkillsSection.module.css */
+.skillsSection {
+  padding: var(--spacing-xl) var(--spacing-md);
+  background: linear-gradient(180deg, var(--bg-color) 0%, rgba(139, 92, 246, 0.05) 100%);
+  overflow: hidden;
+  min-height: 400px;
 }
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  text-align: center;
+  margin-bottom: var(--spacing-lg);
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Marquee Styles */
+.marquee {
+  width: 100%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-xl);
+  position: relative;
+}
+
+.marquee::before,
+.marquee::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 100px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marquee::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg-color), transparent);
+}
+
+.marquee::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--bg-color), transparent);
+}
+
+.marqueeContent {
+  display: flex;
+  gap: var(--spacing-lg);
+  padding: 0 var(--spacing-md);
+  will-change: transform;
+}
+
 .marqueeItem {
-width: 60px;
-height: 60px;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  transition: var(--transition-fast);
 }
+
+.marqueeItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-color);
+  transform: scale(1.1);
+}
+
+.marqueeItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.marqueeText {
+  color: var(--text-color);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Categories */
+.categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
+.category h3 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-md);
+  text-transform: capitalize;
+}
+
+.skillGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.skillCard {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  transition: var(--transition-normal);
+  text-align: center;
+  min-height: 180px;
+}
+
+.skillCard:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-color);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.skillCard img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
+}
+
+.placeholderLogo {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+}
+
+.skillName {
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: auto;
+}
+
+.proficiency {
+  width: 100%;
+  margin-top: var(--spacing-xs);
+}
+
+.proficiencyBar {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.proficiencyBar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: inherit;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 10px;
+}
+
+.proficiencyText {
+  display: block;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .skillGrid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  .marqueeItem {
+    width: 60px;
+    height: 60px;
+  }
+
+  .skillCard {
+    min-height: 150px;
+  }
+
+  .skillCard img,
+  .placeholderLogo {
+    width: 50px;
+    height: 50px;
+  }
 }

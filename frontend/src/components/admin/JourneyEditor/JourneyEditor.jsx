@@ -10,8 +10,10 @@ const JourneyEditor = () => {
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
+    autoPosition: true,
     bikeAnimation: {
       speed: 1,
+      icon: 'fas fa-bicycle',
     },
   });
   const [steps, setSteps] = useState([]);
@@ -24,7 +26,8 @@ const JourneyEditor = () => {
       setFormData({
         title: journey.title || '',
         subtitle: journey.subtitle || '',
-        bikeAnimation: journey.bikeAnimation || { speed: 1 },
+        autoPosition: journey.autoPosition !== false,
+        bikeAnimation: journey.bikeAnimation || { speed: 1, icon: 'fas fa-bicycle' },
       });
       setSteps(journey.steps || []);
       setBikeImage(journey.bikeAnimation?.bikeImage);
@@ -32,7 +35,7 @@ const JourneyEditor = () => {
   }, [journey]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
     
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
@@ -46,7 +49,7 @@ const JourneyEditor = () => {
     } else {
       setFormData({
         ...formData,
-        [name]: value,
+        [name]: type === 'checkbox' ? checked : value,
       });
     }
   };
@@ -68,8 +71,9 @@ const JourneyEditor = () => {
         year: '',
         title: '',
         description: '',
-        icon: '',
-        position: ((steps.length + 1) / (steps.length + 2)) * 100,
+        icon: 'fas fa-graduation-cap',
+        position: 0, // Will be auto-calculated
+        percentage: null,
       },
     ]);
   };
@@ -156,6 +160,22 @@ const JourneyEditor = () => {
               placeholder="The path I've traveled..."
             />
           </div>
+
+          <div className={styles.formGroup}>
+            <label>
+              <input
+                type="checkbox"
+                name="autoPosition"
+                checked={formData.autoPosition}
+                onChange={handleChange}
+                style={{ marginRight: '8px' }}
+              />
+              Auto-distribute steps evenly (recommended)
+            </label>
+            <small style={{ display: 'block', marginTop: '4px', color: 'var(--text-secondary)' }}>
+              When enabled, steps will be automatically positioned evenly along the timeline
+            </small>
+          </div>
         </div>
 
         <div className={styles.formSection}>
@@ -176,7 +196,22 @@ const JourneyEditor = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Bike Image (optional)</label>
+            <label htmlFor="bikeAnimation.icon">Bike Icon (Font Awesome class)</label>
+            <input
+              type="text"
+              id="bikeAnimation.icon"
+              name="bikeAnimation.icon"
+              value={formData.bikeAnimation.icon}
+              onChange={handleChange}
+              placeholder="fas fa-bicycle"
+            />
+            <small style={{ display: 'block', marginTop: '4px', color: 'var(--text-secondary)' }}>
+              Examples: fas fa-bicycle, fas fa-motorcycle, fas fa-car, fas fa-rocket
+            </small>
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Bike Image (optional - overrides icon)</label>
             <FileUploader
               folder="journey"
               onUploadSuccess={(result) => setBikeImage(result)}
@@ -239,7 +274,22 @@ const JourneyEditor = () => {
                 </div>
 
                 <div className={styles.formGroup}>
-                  <label>Position (%)</label>
+                  <label>Percentage Achieved (optional)</label>
+                  <input
+                    type="number"
+                    value={step.percentage || ''}
+                    onChange={(e) => handleStepChange(index, 'percentage', e.target.value ? parseFloat(e.target.value) : null)}
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    placeholder="85.5"
+                  />
+                </div>
+              </div>
+
+              {!formData.autoPosition && (
+                <div className={styles.formGroup}>
+                  <label>Position (%) - Manual Override</label>
                   <input
                     type="number"
                     value={step.position || 0}
@@ -249,7 +299,7 @@ const JourneyEditor = () => {
                     step="1"
                   />
                 </div>
-              </div>
+              )}
 
               <div className={styles.formGroup}>
                 <label>Title *</label>
@@ -274,13 +324,16 @@ const JourneyEditor = () => {
               </div>
 
               <div className={styles.formGroup}>
-                <label>Icon (emoji or text)</label>
+                <label>Icon (Font Awesome class)</label>
                 <input
                   type="text"
                   value={step.icon || ''}
                   onChange={(e) => handleStepChange(index, 'icon', e.target.value)}
-                  placeholder="🎓"
+                  placeholder="fas fa-graduation-cap"
                 />
+                <small style={{ display: 'block', marginTop: '4px', color: 'var(--text-secondary)' }}>
+                  Examples: fas fa-graduation-cap, fas fa-briefcase, fas fa-trophy, fas fa-star
+                </small>
               </div>
 
               <div className={styles.formGroup}>

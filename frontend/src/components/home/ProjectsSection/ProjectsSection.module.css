@@ -30,8 +30,9 @@
 
 .projectsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: var(--spacing-lg);
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  align-items: start;
 }
 
 .projectCard {
@@ -46,6 +47,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  height: 420px; /* Fixed height for consistency */
 }
 
 .projectCard::before {
@@ -54,7 +56,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
+  height: 3px;
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   transform: scaleX(0);
   transform-origin: left;
@@ -66,7 +68,7 @@
 }
 
 .projectCard:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   background: rgba(255, 255, 255, 0.05);
   box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
   border-color: var(--primary-color);
@@ -74,10 +76,11 @@
 
 .projectImage {
   width: 100%;
-  height: 250px;
+  height: 180px; /* Reduced from 250px */
   overflow: hidden;
   position: relative;
   background: rgba(255, 255, 255, 0.02);
+  flex-shrink: 0;
 }
 
 .projectImage img {
@@ -88,7 +91,7 @@
 }
 
 .projectCard:hover .projectImage img {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .projectOverlay {
@@ -111,9 +114,9 @@
 
 .viewProject {
   color: white;
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
-  padding: 1rem 2rem;
+  padding: 0.75rem 1.5rem;
   border: 2px solid white;
   border-radius: var(--radius-md);
   transition: var(--transition-fast);
@@ -125,43 +128,57 @@
 }
 
 .projectContent {
-  padding: var(--spacing-md);
+  padding: 1.25rem;
   flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0; /* Important for flex overflow */
 }
 
 .projectContent h3 {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-color);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.5rem;
   line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .projectContent p {
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: var(--spacing-md);
-  flex: 1;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limit to 2 lines */
+  -webkit-box-orient: vertical;
+  flex: 0;
 }
 
 .techStack {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-sm);
+  gap: 0.4rem;
+  margin-bottom: 0.75rem;
+  margin-top: auto; /* Push to bottom */
 }
 
 .techBadge {
   background: rgba(99, 102, 241, 0.1);
   color: var(--primary-color);
-  padding: 0.4rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 16px;
+  font-size: 0.75rem;
   font-weight: 600;
   border: 1px solid rgba(99, 102, 241, 0.3);
   transition: var(--transition-fast);
+  white-space: nowrap;
 }
 
 .techBadge:hover {
@@ -171,23 +188,28 @@
 
 .projectLinks {
   display: flex;
-  gap: var(--spacing-sm);
-  padding-top: var(--spacing-sm);
+  gap: 0.5rem;
+  padding-top: 0.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
 }
 
 .projectLink {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 0.6rem;
   text-align: center;
   background: rgba(99, 102, 241, 0.1);
   color: var(--primary-color);
   text-decoration: none;
   border-radius: var(--radius-sm);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   border: 1px solid rgba(99, 102, 241, 0.3);
   transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
 }
 
 .projectLink:hover {
@@ -197,13 +219,40 @@
   box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
 }
 
+.projectLink i {
+  font-size: 1rem;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .projectsGrid {
     grid-template-columns: 1fr;
   }
 
+  .projectCard {
+    height: auto;
+    min-height: 380px;
+  }
+
   .projectImage {
-    height: 200px;
+    height: 160px;
+  }
+
+  .projectContent h3 {
+    font-size: 1.15rem;
+  }
+
+  .projectContent p {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .projectImage {
+    height: 140px;
+  }
+  
+  .projectCard {
+    min-height: 360px;
   }
 }

@@ -9,77 +9,78 @@ gsap.registerPlugin(ScrollTrigger);
 
 const SkillsSection = ({ data }) => {
   const sectionRef = useRef(null);
-
-  // Debug: Log data
-  useEffect(() => {
-    console.log('Skills Section Data:', data);
-    console.log('Skills Data Type:', typeof data);
-    console.log('Is Array?', Array.isArray(data));
-    console.log('Skills Length:', data?.length);
-  }, [data]);
+  const titleRef = useRef(null);
 
   useEffect(() => {
-    if (!sectionRef.current) return;
+    if (!sectionRef.current || !titleRef.current) return;
 
-    gsap.from(sectionRef.current, {
-      opacity: 0,
-      y: 50,
-      duration: 1,
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-      },
-    });
+    const ctx = gsap.context(() => {
+      gsap.from(titleRef.current, {
+        opacity: 0,
+        y: 50,
+        duration: 1,
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+        },
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
-  // Group skills by category
+  const skillsArray = Array.isArray(data) ? data : [];
   const categories = {
-    frontend: data?.filter((s) => s.category === 'frontend') || [],
-    backend: data?.filter((s) => s.category === 'backend') || [],
-    database: data?.filter((s) => s.category === 'database') || [],
-    tools: data?.filter((s) => s.category === 'tools') || [],
-    other: data?.filter((s) => s.category === 'other') || [],
+    frontend: skillsArray.filter((s) => s.category === 'frontend'),
+    backend: skillsArray.filter((s) => s.category === 'backend'),
+    database: skillsArray.filter((s) => s.category === 'database'),
+    tools: skillsArray.filter((s) => s.category === 'tools'),
+    other: skillsArray.filter((s) => s.category === 'other'),
   };
 
-  // Always render the section
   return (
     <section ref={sectionRef} className={styles.skillsSection} id="skills">
       <div className={styles.container}>
-        <h2 className={styles.title}>Skills & Technologies</h2>
-        <p className={styles.subtitle}>My technical expertise and tools I work with</p>
+        <h2 ref={titleRef} className={styles.title}>Skills & Technologies</h2>
         
-        {!data || data.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '3rem', 
-            color: 'var(--text-secondary)',
-            fontSize: '1.1rem'
-          }}>
-            No skills available yet. Check back soon!
-          </div>
-        ) : (
+        {skillsArray.length > 0 && (
           <>
-            {/* All skills marquee */}
-            <LogoMarquee skills={data.filter((s) => s.displayInMarquee !== false)} />
+            {/* Beautiful Marquee */}
+            <LogoMarquee skills={skillsArray.filter((s) => s.displayInMarquee !== false)} />
 
-            {/* Categorized skills */}
+            {/* Categorized skills grid */}
             <div className={styles.categories}>
-              {Object.entries(categories).map(([category, skills]) => (
-                skills.length > 0 && (
+              {Object.entries(categories).map(([category, skills]) => {
+                if (skills.length === 0) return null;
+                
+                return (
                   <div key={category} className={styles.category}>
                     <h3>{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
                     <div className={styles.skillGrid}>
                       {skills.map((skill) => (
                         <div key={skill._id} className={styles.skillCard}>
-                          {skill.logo?.url ? (
+                          {skill.fontAwesomeIcon ? (
+                            <i 
+                              className={skill.fontAwesomeIcon}
+                              style={{
+                                fontSize: '3rem',
+                                display: 'block',
+                                marginBottom: '0.5rem',
+                                background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text',
+                              }}
+                            ></i>
+                          ) : skill.logo?.url ? (
                             <img src={skill.logo.url} alt={skill.name} />
                           ) : (
                             <div className={styles.placeholderLogo}>
-                              {skill.name.charAt(0)}
+                              {skill.name.charAt(0).toUpperCase()}
                             </div>
                           )}
-                          <span>{skill.name}</span>
-                          {skill.proficiency && (
+                          <span className={styles.skillName}>{skill.name}</span>
+                          {skill.proficiency && skill.proficiency > 0 && (
                             <div className={styles.proficiency}>
                               <div
                                 className={styles.proficiencyBar}
@@ -94,8 +95,8 @@ const SkillsSection = ({ data }) => {
                       ))}
                     </div>
                   </div>
-                )
-              ))}
+                );
+              })}
             </div>
           </>
         )}

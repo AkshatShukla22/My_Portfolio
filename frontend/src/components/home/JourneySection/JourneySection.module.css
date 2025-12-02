@@ -1,20 +1,23 @@
+/* frontend/src/components/home/JourneySection/JourneySection.module.css */
+
 .journeySection {
-  padding: var(--spacing-xl) var(--spacing-md);
+  padding: 80px 20px;
   background: linear-gradient(180deg, var(--bg-color) 0%, rgba(99, 102, 241, 0.05) 100%);
   position: relative;
   overflow: hidden;
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
+  padding: 0 40px;
 }
 
 .title {
   font-family: var(--font-heading);
   font-size: clamp(2rem, 4vw, 3.5rem);
   text-align: center;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 12px;
   background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -25,46 +28,66 @@
   text-align: center;
   font-size: 1.2rem;
   color: var(--text-secondary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 120px;
 }
 
 .journeyContainer {
   position: relative;
-  padding: var(--spacing-lg) 0;
-  min-height: 600px;
+  padding: 280px 0 320px 0;
+  min-height: 700px;
 }
 
+/* Background road (darker shade) */
 .road {
   position: absolute;
+  top: 40%;
+  left: 60px;
+  right: 60px;
+  height: 8px;
+  background: rgba(99, 102, 241, 0.15);
+  border-radius: 10px;
+  transform: translateY(-50%);
+  z-index: 3;
+}
+
+/* Progress road (colored as you scroll) */
+.progressRoad {
+  position: absolute;
   top: 50%;
-  left: 0;
-  width: 100%;
+  left: 60px;
+  right: 60px;
   height: 8px;
   background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
   border-radius: 10px;
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
-  transform: translateY(-50%);
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left center;
+  z-index: 4;
 }
 
 .bike {
   position: absolute;
-  top: 50%;
-  left: 0;
+  top: 40%;
+  left: 60px;
   transform: translateY(-50%);
-  z-index: 10;
+  z-index: 30;
   font-size: 3rem;
 }
 
 .bike img {
-  width: 80px;
-  height: 80px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
 }
 
 .defaultBike {
-  font-size: 3rem;
+  font-size: 2.2rem;
+  color: var(--primary-color);
   filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .steps {
@@ -73,47 +96,81 @@
   height: 100%;
 }
 
-.step {
+.stepWrapper {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   width: 300px;
+  transform: translateX(-50%);
 }
 
-.step:nth-child(odd) {
-  top: 20%;
+/* Top cards - icon sits on top of card, both above the line */
+.wrapperTop {
+  bottom: 50%;
+  transform: translateX(-50%) translateY(-50px);
 }
 
-.step:nth-child(even) {
-  top: 70%;
+/* Bottom cards - card and icon below the line */
+.wrapperBottom {
+  top: 50%;
+  transform: translateX(-50%) translateY(50px);
+  flex-direction: column-reverse;
 }
 
 .stepMarker {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto var(--spacing-sm);
   box-shadow: 0 0 30px rgba(99, 102, 241, 0.6);
-  font-size: 1.5rem;
+  font-size: 1.6rem;
+  color: white;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
 }
 
-.stepMarker img {
-  width: 30px;
-  height: 30px;
-  object-fit: contain;
+/* Icon positioning for top cards */
+.wrapperTop .stepMarker {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+/* Icon positioning for bottom cards */
+.wrapperBottom .stepMarker {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.stepMarker i {
+  font-size: 1.6rem;
 }
 
 .stepContent {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
+  border-radius: 12px;
+  padding: 20px;
   text-align: center;
+  width: 100%;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 5;
+}
+
+.stepContent.expanded {
+  padding-bottom: 30px;
 }
 
 .year {
@@ -121,43 +178,106 @@
   font-size: 0.9rem;
   font-weight: 700;
   color: var(--primary-color);
-  background: rgba(99, 102, 241, 0.1);
-  padding: 0.25rem 0.75rem;
+  background: rgba(99, 102, 241, 0.15);
+  padding: 6px 14px;
   border-radius: 20px;
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 12px;
 }
 
 .stepContent h3 {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--text-color);
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: 12px;
+  line-height: 1.4;
 }
 
-.stepContent p {
+.description {
   color: var(--text-secondary);
   line-height: 1.6;
   font-size: 0.95rem;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.seeMoreText {
+  display: block;
+  color: var(--primary-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+
+.seeMoreText:hover {
+  color: var(--secondary-color);
+  text-decoration: underline;
+}
+
+.percentageBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  padding: 8px 16px;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 12px;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2);
+}
+
+.percentageBadge i {
+  font-size: 1rem;
 }
 
 .stepImage {
   width: 100%;
   height: 150px;
   object-fit: cover;
-  border-radius: var(--radius-sm);
-  margin-top: var(--spacing-sm);
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+  .stepWrapper {
+    width: 280px;
+  }
 }
 
 @media (max-width: 768px) {
-  .step {
+  .journeyContainer {
+    padding: 60px 0;
+  }
+
+  .stepWrapper {
     position: relative !important;
     width: 100%;
     top: auto !important;
+    bottom: auto !important;
     left: 0 !important;
-    margin-bottom: var(--spacing-lg);
+    transform: none !important;
+    margin: 0 0 60px 0 !important;
+    flex-direction: column !important;
   }
 
-  .road {
+  .wrapperTop .stepMarker,
+  .wrapperBottom .stepMarker {
+    position: relative !important;
+    top: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    margin-bottom: 18px !important;
+  }
+
+  .road,
+  .progressRoad {
     display: none;
   }
 

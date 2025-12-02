@@ -1,0 +1,197 @@
+/* frontend/src/components/home/SkillsSection/LogoMarquee.module.css */
+.marqueeWrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: var(--spacing-xl) 0;
+  position: relative;
+  background: transparent;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* Gradient fade edges */
+.marqueeWrapper::before,
+.marqueeWrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  width: 150px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marqueeWrapper::before {
+  left: 0;
+  background: linear-gradient(90deg, var(--bg-color) 0%, transparent 100%);
+}
+
+.marqueeWrapper::after {
+  right: 0;
+  background: linear-gradient(-90deg, var(--bg-color) 0%, transparent 100%);
+}
+
+.marqueeTrack {
+  display: flex;
+  gap: 4rem;
+  animation: scroll 40s linear infinite;
+  width: max-content;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.marqueeTrack:hover {
+  animation-play-state: paused;
+}
+
+.marqueeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 120px;
+  transition: transform 0.3s ease;
+}
+
+.marqueeItem:hover {
+  transform: translateY(-10px);
+}
+
+.iconCircle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, 0.1) 0%, 
+    rgba(139, 92, 246, 0.1) 50%,
+    rgba(236, 72, 153, 0.1) 100%
+  );
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.4s ease;
+  backdrop-filter: blur(10px);
+}
+
+/* Animated gradient border */
+.iconCircle::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.marqueeItem:hover .iconCircle::before {
+  opacity: 1;
+  animation: rotateBorder 3s linear infinite;
+}
+
+@keyframes rotateBorder {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.marqueeItem:hover .iconCircle {
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, 0.2) 0%, 
+    rgba(139, 92, 246, 0.2) 50%,
+    rgba(236, 72, 153, 0.2) 100%
+  );
+  box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+  transform: scale(1.05);
+}
+
+/* Font Awesome Icons */
+.iconCircle i {
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: all 0.3s ease;
+}
+
+.marqueeItem:hover .iconCircle i {
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Image fallback */
+.iconCircle img {
+  width: 60%;
+  height: 60%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+  transition: all 0.3s ease;
+}
+
+.marqueeItem:hover .iconCircle img {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.8));
+}
+
+/* Fallback text icon */
+.fallbackIcon {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.skillName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.marqueeItem:hover .skillName {
+  color: var(--primary-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .marqueeTrack {
+    gap: 2.5rem;
+    animation-duration: 30s;
+  }
+
+  .iconCircle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .iconCircle i {
+    font-size: 2.5rem;
+  }
+
+  .marqueeItem {
+    min-width: 100px;
+  }
+
+  .skillName {
+    font-size: 0.85rem;
+  }
+}
