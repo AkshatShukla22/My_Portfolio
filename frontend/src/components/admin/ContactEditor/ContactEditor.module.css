@@ -1,0 +1,115 @@
+/* Add these styles to frontend/src/components/admin/ContactEditor/ContactEditor.module.css */
+
+.miniForm {
+  background: rgba(255, 255, 255, 0.02);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: var(--spacing-md);
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.listItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+}
+
+.listItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.listItem > div:first-child {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-color);
+}
+
+.listItem i {
+  color: var(--primary-color);
+  font-size: 1.2rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid var(--primary-color);
+  border-radius: var(--radius-sm);
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: var(--spacing-sm);
+}
+
+.itemActions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
+.editBtn,
+.deleteBtn {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editBtn {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+.editBtn:hover {
+  background: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+}
+
+.deleteBtn {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.deleteBtn:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.cancelButton {
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition-normal);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+}
+
+.cancelButton:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-color);
+}

@@ -47,14 +47,17 @@
 }
 
 .socialLinks a {
-  padding: 0.6rem 1.2rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: rgba(99, 102, 241, 0.1);
   border: 1px solid var(--primary-color);
   border-radius: var(--radius-sm);
   color: var(--primary-color);
   text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 1.2rem;
   transition: var(--transition-normal);
 }
 
@@ -88,12 +91,20 @@
   font-family: var(--font-primary);
   padding: 0;
   text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .linkList button:hover,
 .linkList a:hover {
   color: var(--primary-color);
   padding-left: 5px;
+}
+
+.linkList i {
+  width: 20px;
+  text-align: center;
 }
 
 .contactList li {
@@ -105,8 +116,21 @@
   font-size: 0.95rem;
 }
 
-.contactList li span:first-child {
-  font-size: 1.2rem;
+.contactList i {
+  font-size: 1.1rem;
+  width: 20px;
+  text-align: center;
+  color: var(--primary-color);
+}
+
+.contactList a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+.contactList a:hover {
+  color: var(--primary-color);
 }
 
 .footerBottom {
@@ -155,11 +179,14 @@
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   cursor: pointer;
   box-shadow: 0 5px 20px rgba(99, 102, 241, 0.4);
   transition: var(--transition-normal);
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .scrollTopBtn:hover {
@@ -167,7 +194,6 @@
   box-shadow: 0 8px 30px rgba(99, 102, 241, 0.6);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .footerContent {
     grid-template-columns: 1fr;

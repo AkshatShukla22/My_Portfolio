@@ -20,6 +20,7 @@ export const ContentProvider = ({ children }) => {
   const [services, setServices] = useState([]);
   const [projects, setProjects] = useState([]);
   const [certifications, setCertifications] = useState([]);
+  const [contact, setContact] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -38,6 +39,7 @@ export const ContentProvider = ({ children }) => {
           servicesRes,
           projectsRes,
           certificationsRes,
+          contactRes,
           blogsRes,
         ] = await Promise.all([
           api.get('/hero').catch(err => {
@@ -68,13 +70,16 @@ export const ContentProvider = ({ children }) => {
             console.error('Certifications fetch error:', err);
             return { data: { data: [] } };
           }),
+          api.get('/contact').catch(err => {
+            console.error('Contact fetch error:', err);
+            return { data: { data: null } };
+          }),
           api.get('/blogs?published=true').catch(err => {
             console.error('Blogs fetch error:', err);
             return { data: { data: [] } };
           }),
         ]);
 
-        // Process and validate data
         const heroData = heroRes.data.data || null;
         const journeyData = journeyRes.data.data || null;
         const timelineData = timelineRes.data.data || null;
@@ -82,6 +87,7 @@ export const ContentProvider = ({ children }) => {
         const servicesData = Array.isArray(servicesRes.data.data) ? servicesRes.data.data : [];
         const projectsData = Array.isArray(projectsRes.data.data) ? projectsRes.data.data : [];
         const certificationsData = Array.isArray(certificationsRes.data.data) ? certificationsRes.data.data : [];
+        const contactData = contactRes.data.data || null;
         const blogsData = Array.isArray(blogsRes.data.data) ? blogsRes.data.data : [];
 
         console.log('✅ [ContentContext] Content fetched:', {
@@ -92,10 +98,10 @@ export const ContentProvider = ({ children }) => {
           services: servicesData.length,
           projects: projectsData.length,
           certifications: certificationsData.length,
+          contact: !!contactData,
           blogs: blogsData.length
         });
 
-        // Update all state
         setHero(heroData);
         setJourney(journeyData);
         setTimeline(timelineData);
@@ -103,20 +109,20 @@ export const ContentProvider = ({ children }) => {
         setServices(servicesData);
         setProjects(projectsData);
         setCertifications(certificationsData);
+        setContact(contactData);
         setBlogs(blogsData);
         
         console.log('✅ [ContentContext] State updated successfully');
         
       } catch (error) {
         console.error('❌ [ContentContext] Failed to fetch content:', error);
-        // Set empty arrays on error
         setSkills([]);
         setServices([]);
         setProjects([]);
         setCertifications([]);
+        setContact(null);
         setBlogs([]);
       } finally {
-        // CRITICAL: Set these AFTER state updates
         setLoading(false);
         setIsInitialized(true);
         console.log('✅ [ContentContext] Initialization complete');
@@ -124,7 +130,7 @@ export const ContentProvider = ({ children }) => {
     };
 
     fetchAllContent();
-  }, []); // Only run once on mount
+  }, []);
 
   const refreshContent = async () => {
     console.log('🔄 [ContentContext] Refreshing content...');
@@ -139,6 +145,7 @@ export const ContentProvider = ({ children }) => {
         servicesRes,
         projectsRes,
         certificationsRes,
+        contactRes,
         blogsRes,
       ] = await Promise.all([
         api.get('/hero').catch(() => ({ data: { data: null } })),
@@ -148,20 +155,20 @@ export const ContentProvider = ({ children }) => {
         api.get('/services').catch(() => ({ data: { data: [] } })),
         api.get('/projects').catch(() => ({ data: { data: [] } })),
         api.get('/certifications').catch(() => ({ data: { data: [] } })),
+        api.get('/contact').catch(() => ({ data: { data: null } })),
         api.get('/blogs?published=true').catch(() => ({ data: { data: [] } })),
       ]);
 
-      const projectsData = Array.isArray(projectsRes.data.data) ? projectsRes.data.data : [];
-      
-      console.log('✅ [ContentContext] Refresh complete - Projects:', projectsData.length);
+      console.log('✅ [ContentContext] Refresh complete');
 
       setHero(heroRes.data.data || null);
       setJourney(journeyRes.data.data || null);
       setTimeline(timelineRes.data.data || null);
       setSkills(Array.isArray(skillsRes.data.data) ? skillsRes.data.data : []);
       setServices(Array.isArray(servicesRes.data.data) ? servicesRes.data.data : []);
-      setProjects(projectsData);
+      setProjects(Array.isArray(projectsRes.data.data) ? projectsRes.data.data : []);
       setCertifications(Array.isArray(certificationsRes.data.data) ? certificationsRes.data.data : []);
+      setContact(contactRes.data.data || null);
       setBlogs(Array.isArray(blogsRes.data.data) ? blogsRes.data.data : []);
       
     } catch (error) {
@@ -179,6 +186,7 @@ export const ContentProvider = ({ children }) => {
     services,
     projects,
     certifications,
+    contact,
     blogs,
     loading,
     isInitialized,

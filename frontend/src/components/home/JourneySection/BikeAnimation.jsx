@@ -13,13 +13,21 @@ const BikeAnimation = ({ bikeImage, bikeIcon = 'fas fa-bicycle', speed = 1, cont
     if (!bikeRef.current || !containerRef?.current) return;
 
     const bike = bikeRef.current;
-    const container = containerRef.current.querySelector('.journeyContainer');
+    const section = containerRef.current;
 
-    if (!container) return;
+    // Find the journey container directly
+    const container = section.querySelector(`.${styles.journeyContainer}`);
+    if (!container) {
+      console.error('Journey container not found');
+      return;
+    }
 
-    // Get the actual road element to calculate exact width
-    const road = container.querySelector('[class*="road"]');
-    if (!road) return;
+    // Find the road element
+    const road = section.querySelector(`.${styles.road}`);
+    if (!road) {
+      console.error('Road element not found');
+      return;
+    }
 
     // Animate bike moving along the road based on scroll, synced with progress bar
     const scrollAnimation = gsap.to(bike, {

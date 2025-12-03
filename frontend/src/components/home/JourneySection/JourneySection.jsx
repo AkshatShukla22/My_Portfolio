@@ -37,7 +37,7 @@ const JourneySection = ({ data }) => {
       }
 
       // Sync both progress road and bike to the same scroll trigger
-      const container = sectionRef.current.querySelector('.journeyContainer');
+      const container = sectionRef.current.querySelector(`.${styles.journeyContainer}`);
       
       if (progressRoadRef.current && container) {
         gsap.to(progressRoadRef.current, {

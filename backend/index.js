@@ -19,6 +19,7 @@ import certificationRoutes from './routes/certificationRoutes.js';
 import blogRoutes from './routes/blogRoutes.js';
 import themeRoutes from './routes/themeRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import contactRoutes from './routes/contactRoutes.js'; // ADD THIS LINE
 
 // ES module fixes
 const __filename = fileURLToPath(import.meta.url);
@@ -52,11 +53,12 @@ app.use('/api/certifications', certificationRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/theme', themeRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/contact', contactRoutes); // ADD THIS LINE
 
 // Error handler
 app.use(errorHandler);
 
-const PORT = process.env.PORT ;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

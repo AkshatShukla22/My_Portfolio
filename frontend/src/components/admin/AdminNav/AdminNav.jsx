@@ -7,14 +7,15 @@ const AdminNav = ({ activeTab, setActiveTab }) => {
   const { logout } = useAuth();
 
   const navItems = [
-    { id: 'hero', label: 'Hero Section', icon: '🏠' },
-    { id: 'journey', label: 'Journey', icon: '🚴' },
-    { id: 'timeline', label: 'Timeline', icon: '📅' },
-    { id: 'skills', label: 'Skills', icon: '💻' },
-    { id: 'projects', label: 'Projects', icon: '📁' },
-    { id: 'certifications', label: 'Certifications', icon: '🎓' },
-    { id: 'blog', label: 'Blog', icon: '✍️' },
-    { id: 'theme', label: 'Theme', icon: '🎨' },
+    { id: 'hero', label: 'Hero Section', icon: 'fa-house' },
+    { id: 'journey', label: 'Journey', icon: 'fa-person-biking' },
+    { id: 'timeline', label: 'Timeline', icon: 'fa-calendar-days' },
+    { id: 'skills', label: 'Skills', icon: 'fa-code' },
+    { id: 'projects', label: 'Projects', icon: 'fa-folder-open' },
+    { id: 'certifications', label: 'Certifications', icon: 'fa-certificate' },
+    { id: 'contact', label: 'Contact', icon: 'fa-address-book' },
+    { id: 'blog', label: 'Blog', icon: 'fa-pen-to-square' },
+    { id: 'theme', label: 'Theme', icon: 'fa-palette' },
   ];
 
   return (
@@ -22,7 +23,7 @@ const AdminNav = ({ activeTab, setActiveTab }) => {
       <div className={styles.navHeader}>
         <h2 className={styles.navTitle}>Admin Panel</h2>
         <Link to="/" className={styles.viewSiteLink}>
-          View Site →
+          <i className="fa-solid fa-arrow-up-right-from-square"></i> View Site
         </Link>
       </div>
 
@@ -35,7 +36,9 @@ const AdminNav = ({ activeTab, setActiveTab }) => {
               }`}
               onClick={() => setActiveTab(item.id)}
             >
-              <span className={styles.navIcon}>{item.icon}</span>
+              <span className={styles.navIcon}>
+                <i className={`fa-solid ${item.icon}`}></i>
+              </span>
               <span className={styles.navLabel}>{item.label}</span>
             </button>
           </li>
@@ -43,7 +46,7 @@ const AdminNav = ({ activeTab, setActiveTab }) => {
       </ul>
 
       <button className={styles.logoutButton} onClick={logout}>
-        <span>🚪</span>
+        <i className="fa-solid fa-right-from-bracket"></i>
         <span>Logout</span>
       </button>
     </nav>

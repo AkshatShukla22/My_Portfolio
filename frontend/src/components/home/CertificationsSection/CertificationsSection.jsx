@@ -14,16 +14,23 @@ const CertificationsSection = ({ data }) => {
     if (!data || data.length === 0) return;
 
     const ctx = gsap.context(() => {
+      // Clear any inline styles that might be added by GSAP
+      gsap.set(cardsRef.current, { clearProps: "all" });
+      
       gsap.from(cardsRef.current, {
-        scale: 0.8,
+        y: 40,
         opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'back.out(1.7)',
+        duration: 0.6,
+        stagger: 0.1,
+        ease: 'power2.out',
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: 'top 70%',
+          start: 'top 75%',
         },
+        onComplete: () => {
+          // Ensure opacity is 1 after animation
+          gsap.set(cardsRef.current, { opacity: 1, y: 0 });
+        }
       });
     }, sectionRef);
 
@@ -47,30 +54,40 @@ const CertificationsSection = ({ data }) => {
                 ref={(el) => (cardsRef.current[index] = el)}
                 className={styles.certCard}
               >
-                {cert.image?.url && (
-                  <div className={styles.certImage}>
-                    <img src={cert.image.url} alt={cert.title} />
-                  </div>
-                )}
-
                 <div className={styles.certContent}>
-                  <h3>{cert.title}</h3>
-                  <p className={styles.issuer}>{cert.issuer}</p>
+                  <div className={styles.certHeader}>
+                    <div className={styles.certIcon}>
+                      <i className="fas fa-award"></i>
+                    </div>
+                    <div className={styles.certHeaderText}>
+                      <h3>{cert.title}</h3>
+                      <p className={styles.issuer}>
+                        <i className="fas fa-building"></i>
+                        {cert.issuer}
+                      </p>
+                    </div>
+                  </div>
 
-                  {cert.date && (
-                    <p className={styles.date}>
-                      Issued: {new Date(cert.date).toLocaleDateString('en-US', { 
-                        month: 'long', 
-                        year: 'numeric' 
-                      })}
-                    </p>
-                  )}
+                  <div className={styles.certMeta}>
+                    {cert.date && (
+                      <div className={styles.metaItem}>
+                        <i className="fas fa-calendar-alt"></i>
+                        <span>
+                          {new Date(cert.date).toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            year: 'numeric' 
+                          })}
+                        </span>
+                      </div>
+                    )}
 
-                  {cert.credentialId && (
-                    <p className={styles.credentialId}>
-                      Credential ID: {cert.credentialId}
-                    </p>
-                  )}
+                    {cert.credentialId && (
+                      <div className={styles.metaItem}>
+                        <i className="fas fa-hashtag"></i>
+                        <span className={styles.credentialId}>{cert.credentialId}</span>
+                      </div>
+                    )}
+                  </div>
 
                   {cert.credentialUrl && (
                     <a
@@ -78,9 +95,9 @@ const CertificationsSection = ({ data }) => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className={styles.verifyButton}
-                      onClick={(e) => e.stopPropagation()}
                     >
-                      Verify Certificate →
+                      Verify Certificate
+                      <i className="fas fa-external-link-alt"></i>
                     </a>
                   )}
                 </div>

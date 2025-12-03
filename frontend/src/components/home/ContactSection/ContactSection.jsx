@@ -1,9 +1,11 @@
 // frontend/src/components/home/ContactSection/ContactSection.jsx
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
+import { useContent } from '../../../context/ContentContext';
 import styles from './ContactSection.module.css';
 
 const ContactSection = () => {
+  const { contact } = useContent();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -46,7 +48,6 @@ const ContactSection = () => {
     setStatus({ type: '', message: '' });
 
     try {
-      // Simulate API call - replace with actual endpoint
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setStatus({
@@ -70,137 +71,182 @@ const ContactSection = () => {
     }
   };
 
+  const primaryEmail = contact?.emails?.find(e => e.isPrimary) || contact?.emails?.[0];
+  const primaryPhone = contact?.phoneNumbers?.find(p => p.isPrimary) || contact?.phoneNumbers?.[0];
+  
+  const sortedSocialLinks = contact?.socialLinks 
+    ? [...contact.socialLinks].sort((a, b) => a.order - b.order)
+    : [];
+
+  const handleEmailClick = (email) => {
+    window.location.href = `mailto:${email}`;
+  };
+
+  const handlePhoneClick = (phone) => {
+    window.location.href = `tel:${phone}`;
+  };
+
+  const handleWhatsAppClick = (phone) => {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    window.open(`https://wa.me/${cleanPhone}`, '_blank');
+  };
+
+  if (!contact) return null;
+
   return (
     <section ref={sectionRef} className={styles.contactSection} id="contact">
       <div className={styles.container}>
         <div className={styles.contactHeader}>
-          <h2 className={styles.title}>Get In Touch</h2>
+          <h2 className={styles.title}>{contact.title || 'Get In Touch'}</h2>
           <p className={styles.subtitle}>
-            Have a project in mind? Let's discuss how I can help you.
+            {contact.subtitle || "Have a project in mind? Let's discuss how I can help you."}
           </p>
         </div>
 
         <div className={styles.contactContent}>
-          <form ref={formRef} onSubmit={handleSubmit} className={styles.contactForm}>
-            <div className={styles.formGroup}>
-              <label htmlFor="name">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="Your Name"
-              />
-            </div>
+          {contact.formEnabled && (
+            <form ref={formRef} onSubmit={handleSubmit} className={styles.contactForm}>
+              <div className={styles.formGroup}>
+                <label htmlFor="name">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Your Name"
+                />
+              </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="your.email@example.com"
-              />
-            </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="email">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="your.email@example.com"
+                />
+              </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="subject">Subject</label>
-              <input
-                type="text"
-                id="subject"
-                name="subject"
-                value={formData.subject}
-                onChange={handleChange}
-                required
-                placeholder="Project Inquiry"
-              />
-            </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="subject">Subject</label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                  placeholder="Project Inquiry"
+                />
+              </div>
 
-            <div className={styles.formGroup}>
-              <label htmlFor="message">Message</label>
-              <textarea
-                id="message"
-                name="message"
-                value={formData.message}
-                onChange={handleChange}
-                required
-                rows="6"
-                placeholder="Tell me about your project..."
-              />
-            </div>
+              <div className={styles.formGroup}>
+                <label htmlFor="message">Message</label>
+                <textarea
+                  id="message"
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  required
+                  rows="6"
+                  placeholder="Tell me about your project..."
+                />
+              </div>
 
-            {status.message && (
-              <div
-                className={`${styles.statusMessage} ${
-                  status.type === 'success' ? styles.success : styles.error
-                }`}
-              >
-                {status.message}
+              {status.message && (
+                <div className={`${styles.statusMessage} ${status.type === 'success' ? styles.success : styles.error}`}>
+                  {status.message}
+                </div>
+              )}
+
+              <button type="submit" className={styles.submitButton} disabled={loading}>
+                {loading ? 'Sending...' : 'Send Message'}
+              </button>
+            </form>
+          )}
+
+          <div className={styles.contactInfo}>
+            {contact.emails && contact.emails.length > 0 && (
+              <div className={styles.infoCard}>
+                <div className={styles.infoIcon}>
+                  <i className="fa-solid fa-envelope"></i>
+                </div>
+                <h3>Email</h3>
+                {contact.emails.sort((a, b) => a.order - b.order).map((email) => (
+                  <p 
+                    key={email._id}
+                    onClick={() => handleEmailClick(email.email)}
+                    className={styles.clickable}
+                  >
+                    {email.label}: {email.email}
+                  </p>
+                ))}
               </div>
             )}
 
-            <button
-              type="submit"
-              className={styles.submitButton}
-              disabled={loading}
-            >
-              {loading ? 'Sending...' : 'Send Message'}
-            </button>
-          </form>
-
-          <div className={styles.contactInfo}>
-            <div className={styles.infoCard}>
-              <div className={styles.infoIcon}>📧</div>
-              <h3>Email</h3>
-              <p>your.email@example.com</p>
-            </div>
-
-            <div className={styles.infoCard}>
-              <div className={styles.infoIcon}>📱</div>
-              <h3>Phone</h3>
-              <p>+1 (234) 567-8900</p>
-            </div>
-
-            <div className={styles.infoCard}>
-              <div className={styles.infoIcon}>📍</div>
-              <h3>Location</h3>
-              <p>City, Country</p>
-            </div>
-
-            <div className={styles.socialLinks}>
-              <h3>Connect With Me</h3>
-              <div className={styles.socialIcons}>
-                <a
-                  href="https://github.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                >
-                  GitHub
-                </a>
-                <a
-                  href="https://linkedin.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="LinkedIn"
-                >
-                  LinkedIn
-                </a>
-                <a
-                  href="https://twitter.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                >
-                  Twitter
-                </a>
+            {contact.phoneNumbers && contact.phoneNumbers.length > 0 && (
+              <div className={styles.infoCard}>
+                <div className={styles.infoIcon}>
+                  <i className="fa-solid fa-phone"></i>
+                </div>
+                <h3>Phone</h3>
+                {contact.phoneNumbers.sort((a, b) => a.order - b.order).map((phone) => (
+                  <div key={phone._id} className={styles.phoneItem}>
+                    <p 
+                      onClick={() => handlePhoneClick(phone.number)}
+                      className={styles.clickable}
+                    >
+                      {phone.label}: {phone.number}
+                    </p>
+                    {phone.showWhatsApp && (
+                      <button
+                        onClick={() => handleWhatsAppClick(phone.number)}
+                        className={styles.whatsappBtn}
+                        aria-label="Contact via WhatsApp"
+                      >
+                        <i className="fa-brands fa-whatsapp"></i> WhatsApp
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
-            </div>
+            )}
+
+            {contact.location && (contact.location.city || contact.location.country) && (
+              <div className={styles.infoCard}>
+                <div className={styles.infoIcon}>
+                  <i className={`fa-solid ${contact.location.icon || 'fa-location-dot'}`}></i>
+                </div>
+                <h3>Location</h3>
+                <p>{contact.location.city}{contact.location.city && contact.location.country && ', '}{contact.location.country}</p>
+              </div>
+            )}
+
+            {sortedSocialLinks.length > 0 && (
+              <div className={styles.socialLinks}>
+                <h3>Connect With Me</h3>
+                <div className={styles.socialIcons}>
+                  {sortedSocialLinks.map((link) => (
+                    <a
+                      key={link._id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={link.platform}
+                      className={styles.socialLink}
+                    >
+                      <i className={`fa-brands ${link.icon}`}></i>
+                      <span>{link.platform}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

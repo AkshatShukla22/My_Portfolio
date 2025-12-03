@@ -7,6 +7,7 @@ import TimelineEditor from '../../components/admin/TimelineEditor/TimelineEditor
 import SkillsEditor from '../../components/admin/SkillsEditor/SkillsEditor';
 import ProjectsEditor from '../../components/admin/ProjectsEditor/ProjectsEditor';
 import CertificationsEditor from '../../components/admin/CertificationsEditor/CertificationsEditor';
+import ContactEditor from '../../components/admin/ContactEditor/ContactEditor';
 import BlogEditor from '../../components/admin/BlogEditor/BlogEditor';
 import ThemeEditor from '../../components/admin/ThemeEditor/ThemeEditor';
 import styles from './Admin.module.css';
@@ -28,6 +29,8 @@ const AdminDashboard = () => {
         return <ProjectsEditor />;
       case 'certifications':
         return <CertificationsEditor />;
+      case 'contact':
+        return <ContactEditor />;
       case 'blog':
         return <BlogEditor />;
       case 'theme':
