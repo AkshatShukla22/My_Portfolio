@@ -7,21 +7,33 @@ import styles from './SkillsSection.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Category labels matching the editor
+const CATEGORY_LABELS = {
+  'frontend': 'Frontend Development',
+  'backend': 'Backend Development',
+  'mobile': 'Mobile Development',
+  'database': 'Database & Data Storage',
+  'devops': 'DevOps & Cloud',
+  'programming': 'Programming Languages',
+  'framework': 'Frameworks & Libraries',
+  'tools': 'Development Tools',
+  'design': 'Design & UI/UX',
+  'testing': 'Testing & QA',
+  'ai-ml': 'AI & Machine Learning',
+  'data-science': 'Data Science & Analytics',
+  'blockchain': 'Blockchain & Web3',
+  'cybersecurity': 'Cybersecurity',
+  'game-dev': 'Game Development',
+  'embedded': 'Embedded Systems & IoT',
+  'version-control': 'Version Control',
+  'soft-skills': 'Soft Skills',
+  'languages': 'Spoken Languages',
+  'other': 'Other Skills',
+};
+
 const SkillsSection = ({ data }) => {
   const sectionRef = useRef(null);
   const titleRef = useRef(null);
-
-  // Debug: Log data
-  useEffect(() => {
-    console.log('🔍 Skills Section Received Data:', data);
-    console.log('📊 Skills Data Type:', typeof data);
-    console.log('✅ Is Array?', Array.isArray(data));
-    console.log('📏 Skills Length:', data?.length);
-    if (data && data.length > 0) {
-      console.log('📝 First Skill:', data[0]);
-      console.log('🖼️ First Skill Logo:', data[0].logo);
-    }
-  }, [data]);
 
   useEffect(() => {
     if (!sectionRef.current || !titleRef.current) return;
@@ -44,21 +56,14 @@ const SkillsSection = ({ data }) => {
   // Ensure data is an array
   const skillsArray = Array.isArray(data) ? data : [];
 
-  // Group skills by category
-  const categories = {
-    frontend: skillsArray.filter((s) => s.category === 'frontend'),
-    backend: skillsArray.filter((s) => s.category === 'backend'),
-    database: skillsArray.filter((s) => s.category === 'database'),
-    tools: skillsArray.filter((s) => s.category === 'tools'),
-    other: skillsArray.filter((s) => s.category === 'other'),
-  };
-
-  console.log('📂 Categories:', {
-    frontend: categories.frontend.length,
-    backend: categories.backend.length,
-    database: categories.database.length,
-    tools: categories.tools.length,
-    other: categories.other.length,
+  // Group skills by category dynamically
+  const groupedSkills = {};
+  skillsArray.forEach(skill => {
+    const category = skill.category || 'other';
+    if (!groupedSkills[category]) {
+      groupedSkills[category] = [];
+    }
+    groupedSkills[category].push(skill);
   });
 
   return (
@@ -88,73 +93,64 @@ const SkillsSection = ({ data }) => {
 
             {/* Categorized skills */}
             <div className={styles.categories}>
-              {Object.entries(categories).map(([category, skills]) => {
+              {Object.entries(groupedSkills).map(([category, skills]) => {
                 if (skills.length === 0) return null;
                 
                 return (
                   <div key={category} className={styles.category}>
-                    <h3>{category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+                    <h3>{CATEGORY_LABELS[category] || category.charAt(0).toUpperCase() + category.slice(1)}</h3>
                     <div className={styles.skillGrid}>
-                      {skills.map((skill) => {
-                        console.log(`🎨 Rendering ${skill.name}:`, {
-                          hasLogo: !!skill.logo,
-                          logoUrl: skill.logo?.url,
-                          hasFontAwesome: !!skill.fontAwesomeIcon,
-                        });
-
-                        return (
-                          <div key={skill._id} className={styles.skillCard}>
-                            {/* FIXED: Show uploaded image first, then Font Awesome, then fallback */}
-                            {skill.logo?.url ? (
-                              <img 
-                                src={skill.logo.url} 
-                                alt={skill.name}
-                                className={styles.skillLogo}
-                                onError={(e) => {
-                                  console.error('❌ Image load error:', skill.name, skill.logo.url);
-                                  e.target.style.display = 'none';
-                                  // Show fallback after image error
-                                  e.target.parentElement.querySelector('.fallback')?.style.setProperty('display', 'flex', 'important');
-                                }}
-                              />
-                            ) : skill.fontAwesomeIcon ? (
-                              <i 
-                                className={skill.fontAwesomeIcon}
-                                style={{
-                                  fontSize: '3.5rem',
-                                  display: 'block',
-                                  background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
-                                  WebkitBackgroundClip: 'text',
-                                  WebkitTextFillColor: 'transparent',
-                                  backgroundClip: 'text',
-                                }}
-                              ></i>
-                            ) : null}
-                            
-                            {/* Fallback placeholder (hidden by default, shown on image error) */}
-                            <div 
-                              className={`${styles.placeholderLogo} fallback`}
-                              style={{ display: skill.logo?.url ? 'none' : 'flex' }}
-                            >
-                              {skill.name.charAt(0).toUpperCase()}
-                            </div>
-
-                            <span className={styles.skillName}>{skill.name}</span>
-                            
-                            {skill.proficiency && skill.proficiency > 0 && (
-                              <div className={styles.proficiency}>
-                                <div
-                                  className={styles.proficiencyBar}
-                                  style={{ width: `${skill.proficiency}%` }}
-                                />
-                                <span className={styles.proficiencyText}>
-                                  {skill.proficiency}%
-                                </span>
-                              </div>
-                            )}
+                      {skills.map((skill) => (
+                        <div key={skill._id} className={styles.skillCard}>
+                          {/* Display priority: Font Awesome Icon > Uploaded Image > Fallback */}
+                          {skill.fontAwesomeIcon ? (
+                            <i 
+                              className={skill.fontAwesomeIcon}
+                              style={{
+                                fontSize: '3.5rem',
+                                display: 'block',
+                                background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text',
+                              }}
+                            ></i>
+                          ) : skill.logo?.url ? (
+                            <img 
+                              src={skill.logo.url} 
+                              alt={skill.name}
+                              className={styles.skillLogo}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const fallback = e.target.parentElement.querySelector('.fallback');
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                          ) : null}
+                          
+                          {/* Fallback placeholder */}
+                          <div 
+                            className={`${styles.placeholderLogo} fallback`}
+                            style={{ display: (skill.fontAwesomeIcon || skill.logo?.url) ? 'none' : 'flex' }}
+                          >
+                            {skill.name.charAt(0).toUpperCase()}
                           </div>
-                        );
-                      })}
+
+                          <span className={styles.skillName}>{skill.name}</span>
+                          
+                          {skill.proficiency && skill.proficiency > 0 && (
+                            <div className={styles.proficiency}>
+                              <div
+                                className={styles.proficiencyBar}
+                                style={{ width: `${skill.proficiency}%` }}
+                              />
+                              <span className={styles.proficiencyText}>
+                                {skill.proficiency}%
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   </div>
                 );

@@ -3,6 +3,7 @@ import express from 'express';
 import {
   getContact,
   updateContact,
+  submitContactForm,
   addSocialLink,
   updateSocialLink,
   deleteSocialLink,
@@ -19,6 +20,7 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getContact);
+router.post('/submit', submitContactForm); // New route for form submission
 
 // Protected routes
 router.put('/', protect, updateContact);

@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { useContent } from '../../../context/ContentContext';
+import api from '../../../utils/api';
 import styles from './ContactSection.module.css';
 
 const ContactSection = () => {
@@ -48,7 +49,7 @@ const ContactSection = () => {
     setStatus({ type: '', message: '' });
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      await api.post('/contact/submit', formData);
 
       setStatus({
         type: 'success',
@@ -64,7 +65,7 @@ const ContactSection = () => {
     } catch (error) {
       setStatus({
         type: 'error',
-        message: 'Failed to send message. Please try again.',
+        message: error.response?.data?.message || 'Failed to send message. Please try again.',
       });
     } finally {
       setLoading(false);
@@ -153,7 +154,7 @@ const ContactSection = () => {
                   value={formData.message}
                   onChange={handleChange}
                   required
-                  rows="6"
+                  rows="5"
                   placeholder="Tell me about your project..."
                 />
               </div>
@@ -176,16 +177,18 @@ const ContactSection = () => {
                 <div className={styles.infoIcon}>
                   <i className="fa-solid fa-envelope"></i>
                 </div>
-                <h3>Email</h3>
-                {contact.emails.sort((a, b) => a.order - b.order).map((email) => (
-                  <p 
-                    key={email._id}
-                    onClick={() => handleEmailClick(email.email)}
-                    className={styles.clickable}
-                  >
-                    {email.label}: {email.email}
-                  </p>
-                ))}
+                <div className={styles.infoContent}>
+                  <h3>Email</h3>
+                  {contact.emails.sort((a, b) => a.order - b.order).map((email) => (
+                    <p 
+                      key={email._id}
+                      onClick={() => handleEmailClick(email.email)}
+                      className={styles.clickable}
+                    >
+                      {email.email}
+                    </p>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -194,26 +197,28 @@ const ContactSection = () => {
                 <div className={styles.infoIcon}>
                   <i className="fa-solid fa-phone"></i>
                 </div>
-                <h3>Phone</h3>
-                {contact.phoneNumbers.sort((a, b) => a.order - b.order).map((phone) => (
-                  <div key={phone._id} className={styles.phoneItem}>
-                    <p 
-                      onClick={() => handlePhoneClick(phone.number)}
-                      className={styles.clickable}
-                    >
-                      {phone.label}: {phone.number}
-                    </p>
-                    {phone.showWhatsApp && (
-                      <button
-                        onClick={() => handleWhatsAppClick(phone.number)}
-                        className={styles.whatsappBtn}
-                        aria-label="Contact via WhatsApp"
+                <div className={styles.infoContent}>
+                  <h3>Phone</h3>
+                  {contact.phoneNumbers.sort((a, b) => a.order - b.order).map((phone) => (
+                    <div key={phone._id} className={styles.phoneItem}>
+                      <p 
+                        onClick={() => handlePhoneClick(phone.number)}
+                        className={styles.clickable}
                       >
-                        <i className="fa-brands fa-whatsapp"></i> WhatsApp
-                      </button>
-                    )}
-                  </div>
-                ))}
+                        {phone.number}
+                      </p>
+                      {phone.showWhatsApp && (
+                        <button
+                          onClick={() => handleWhatsAppClick(phone.number)}
+                          className={styles.whatsappBtn}
+                          aria-label="Contact via WhatsApp"
+                        >
+                          <i className="fa-brands fa-whatsapp"></i>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
@@ -222,8 +227,10 @@ const ContactSection = () => {
                 <div className={styles.infoIcon}>
                   <i className={`fa-solid ${contact.location.icon || 'fa-location-dot'}`}></i>
                 </div>
-                <h3>Location</h3>
-                <p>{contact.location.city}{contact.location.city && contact.location.country && ', '}{contact.location.country}</p>
+                <div className={styles.infoContent}>
+                  <h3>Location</h3>
+                  <p>{contact.location.city}{contact.location.city && contact.location.country && ', '}{contact.location.country}</p>
+                </div>
               </div>
             )}
 
@@ -238,10 +245,10 @@ const ContactSection = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={link.platform}
-                      className={styles.socialLink}
+                      className={styles.socialIcon}
+                      title={link.platform}
                     >
                       <i className={`fa-brands ${link.icon}`}></i>
-                      <span>{link.platform}</span>
                     </a>
                   ))}
                 </div>

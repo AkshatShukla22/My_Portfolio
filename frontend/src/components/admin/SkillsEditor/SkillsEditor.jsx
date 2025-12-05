@@ -5,6 +5,30 @@ import api from '../../../utils/api';
 import FileUploader from '../FileUploader/FileUploader';
 import styles from '../HeroEditor/HeroEditor.module.css';
 
+// Expanded categories for any skill domain
+const SKILL_CATEGORIES = [
+  { value: 'frontend', label: 'Frontend Development' },
+  { value: 'backend', label: 'Backend Development' },
+  { value: 'mobile', label: 'Mobile Development' },
+  { value: 'database', label: 'Database & Data Storage' },
+  { value: 'devops', label: 'DevOps & Cloud' },
+  { value: 'programming', label: 'Programming Languages' },
+  { value: 'framework', label: 'Frameworks & Libraries' },
+  { value: 'tools', label: 'Development Tools' },
+  { value: 'design', label: 'Design & UI/UX' },
+  { value: 'testing', label: 'Testing & QA' },
+  { value: 'ai-ml', label: 'AI & Machine Learning' },
+  { value: 'data-science', label: 'Data Science & Analytics' },
+  { value: 'blockchain', label: 'Blockchain & Web3' },
+  { value: 'cybersecurity', label: 'Cybersecurity' },
+  { value: 'game-dev', label: 'Game Development' },
+  { value: 'embedded', label: 'Embedded Systems & IoT' },
+  { value: 'version-control', label: 'Version Control' },
+  { value: 'soft-skills', label: 'Soft Skills' },
+  { value: 'languages', label: 'Spoken Languages' },
+  { value: 'other', label: 'Other Skills' },
+];
+
 const SkillsEditor = () => {
   const { skills, refreshContent } = useContent();
   const [skillsList, setSkillsList] = useState([]);
@@ -12,11 +36,11 @@ const SkillsEditor = () => {
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    category: 'frontend',
+    category: 'programming',
     proficiency: 80,
     displayInMarquee: true,
     order: 0,
-    fontAwesomeIcon: '', // NEW
+    fontAwesomeIcon: '',
   });
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -41,11 +65,11 @@ const SkillsEditor = () => {
     setShowForm(true);
     setFormData({
       name: skill.name,
-      category: skill.category || 'frontend',
+      category: skill.category || 'programming',
       proficiency: skill.proficiency || 80,
       displayInMarquee: skill.displayInMarquee !== false,
       order: skill.order || 0,
-      fontAwesomeIcon: skill.fontAwesomeIcon || '', // NEW
+      fontAwesomeIcon: skill.fontAwesomeIcon || '',
     });
     setLogo(skill.logo);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -102,7 +126,7 @@ const SkillsEditor = () => {
     setShowForm(false);
     setFormData({
       name: '',
-      category: 'frontend',
+      category: 'programming',
       proficiency: 80,
       displayInMarquee: true,
       order: 0,
@@ -115,11 +139,15 @@ const SkillsEditor = () => {
     return skillsList.filter(s => s.category === category);
   };
 
+  const getCategoryLabel = (value) => {
+    return SKILL_CATEGORIES.find(cat => cat.value === value)?.label || value;
+  };
+
   return (
     <div className={styles.editorContainer}>
       <div className={styles.editorHeader}>
         <h2>Skills Management</h2>
-        <p>Manage your technical skills and tools</p>
+        <p>Manage all your skills across any domain - from technical to soft skills</p>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
@@ -151,29 +179,30 @@ const SkillsEditor = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                placeholder="React"
+                placeholder="e.g., React, Python, Leadership, Spanish"
               />
             </div>
 
             <div className={styles.formRow}>
               <div className={styles.formGroup}>
-                <label htmlFor="category">Category</label>
+                <label htmlFor="category">Category *</label>
                 <select
                   id="category"
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
+                  required
                 >
-                  <option value="frontend">Frontend</option>
-                  <option value="backend">Backend</option>
-                  <option value="database">Database</option>
-                  <option value="tools">Tools</option>
-                  <option value="other">Other</option>
+                  {SKILL_CATEGORIES.map(cat => (
+                    <option key={cat.value} value={cat.value}>
+                      {cat.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className={styles.formGroup}>
-                <label htmlFor="proficiency">Proficiency (%)</label>
+                <label htmlFor="proficiency">Proficiency (%) *</label>
                 <input
                   type="number"
                   id="proficiency"
@@ -182,7 +211,11 @@ const SkillsEditor = () => {
                   onChange={handleChange}
                   min="0"
                   max="100"
+                  required
                 />
+                <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem' }}>
+                  0-100 scale representing your skill level
+                </small>
               </div>
 
               <div className={styles.formGroup}>
@@ -195,6 +228,9 @@ const SkillsEditor = () => {
                   onChange={handleChange}
                   min="0"
                 />
+                <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem' }}>
+                  Lower numbers appear first
+                </small>
               </div>
             </div>
 
@@ -208,24 +244,27 @@ const SkillsEditor = () => {
                   onChange={handleChange}
                   style={{ width: 'auto', margin: 0 }}
                 />
-                <span>Display in Marquee</span>
+                <span>Display in Animated Marquee</span>
               </label>
+              <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem', marginLeft: '26px' }}>
+                Show this skill in the scrolling banner at the top of the skills section
+              </small>
             </div>
           </div>
 
-          {/* NEW: Font Awesome Icon Section */}
+          {/* Font Awesome Icon Section */}
           <div className={styles.formSection}>
-            <h3>Marquee Icon (Font Awesome)</h3>
+            <h3>Icon (Font Awesome - Optional)</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              Enter Font Awesome class (e.g., "fab fa-react", "fab fa-html5", "fab fa-css3-alt")
+              Enter Font Awesome class for icon display (e.g., "fab fa-react", "fab fa-python", "fas fa-brain")
               <br />
               <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>
-                Find icons here →
+                🔍 Search Font Awesome Icons →
               </a>
             </p>
 
             <div className={styles.formGroup}>
-              <label htmlFor="fontAwesomeIcon">Font Awesome Class</label>
+              <label htmlFor="fontAwesomeIcon">Font Awesome Class (Optional)</label>
               <input
                 type="text"
                 id="fontAwesomeIcon"
@@ -260,10 +299,17 @@ const SkillsEditor = () => {
             )}
           </div>
 
+          {/* Logo Upload Section */}
           <div className={styles.formSection}>
-            <h3>Skill Logo (Optional - for grid display)</h3>
+            <h3>Custom Logo/Image (Optional)</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              Upload image for the skills grid section
+              Upload a custom image for this skill. This will be used:
+              <br />
+              • In the skills grid section
+              <br />
+              • In the marquee <strong>if no Font Awesome icon is provided</strong>
+              <br />
+              <em>Recommended: Square images (PNG/SVG) with transparent backgrounds work best</em>
             </p>
             <FileUploader
               key={editingSkill?._id || 'new'}
@@ -271,6 +317,20 @@ const SkillsEditor = () => {
               onUploadSuccess={(result) => setLogo(result)}
               currentImage={logo}
             />
+            
+            {!formData.fontAwesomeIcon && !logo && (
+              <div style={{
+                marginTop: '1rem',
+                padding: '1rem',
+                background: 'rgba(255, 200, 0, 0.1)',
+                border: '1px solid rgba(255, 200, 0, 0.3)',
+                borderRadius: 'var(--radius-sm)',
+                fontSize: '0.9rem',
+                color: '#fbbf24'
+              }}>
+                ⚠️ No icon or image provided. A letter placeholder will be shown in the marquee.
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', gap: '1rem' }}>
@@ -298,19 +358,18 @@ const SkillsEditor = () => {
         <div className={styles.formSection}>
           <h3>Skills by Category</h3>
 
-          {['frontend', 'backend', 'database', 'tools', 'other'].map(category => {
-            const categorySkills = getCategorySkills(category);
+          {SKILL_CATEGORIES.map(category => {
+            const categorySkills = getCategorySkills(category.value);
             if (categorySkills.length === 0) return null;
 
             return (
-              <div key={category} style={{ marginBottom: '2rem' }}>
+              <div key={category.value} style={{ marginBottom: '2rem' }}>
                 <h4 style={{ 
                   color: 'var(--primary-color)', 
-                  textTransform: 'capitalize',
                   marginBottom: '1rem',
                   fontSize: '1.2rem'
                 }}>
-                  {category} ({categorySkills.length})
+                  {category.label} ({categorySkills.length})
                 </h4>
 
                 <div style={{ 
