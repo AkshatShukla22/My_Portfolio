@@ -2,22 +2,24 @@
 import express from 'express';
 import {
   getServices,
-  getServiceById,
+  getService,
   createService,
   updateService,
   deleteService,
+  reorderServices
 } from '../controllers/serviceController.js';
 import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.route('/')
-  .get(getServices)
-  .post(protect, createService);
+// Public routes
+router.get('/', getServices);
+router.get('/:id', getService);
 
-router.route('/:id')
-  .get(getServiceById)
-  .put(protect, updateService)
-  .delete(protect, deleteService);
+// Protected routes
+router.post('/', protect, createService);
+router.put('/reorder', protect, reorderServices);
+router.put('/:id', protect, updateService);
+router.delete('/:id', protect, deleteService);
 
 export default router;

@@ -11,6 +11,7 @@ const AdminNav = ({ activeTab, setActiveTab }) => {
     { id: 'journey', label: 'Journey', icon: 'fa-person-biking' },
     { id: 'timeline', label: 'Timeline', icon: 'fa-calendar-days' },
     { id: 'skills', label: 'Skills', icon: 'fa-code' },
+    { id: 'services', label: 'Services', icon: 'fa-gears' }, // ADDED
     { id: 'projects', label: 'Projects', icon: 'fa-folder-open' },
     { id: 'certifications', label: 'Certifications', icon: 'fa-certificate' },
     { id: 'contact', label: 'Contact', icon: 'fa-address-book' },

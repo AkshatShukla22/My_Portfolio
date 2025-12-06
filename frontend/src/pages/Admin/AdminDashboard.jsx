@@ -5,6 +5,7 @@ import HeroEditor from '../../components/admin/HeroEditor/HeroEditor';
 import JourneyEditor from '../../components/admin/JourneyEditor/JourneyEditor';
 import TimelineEditor from '../../components/admin/TimelineEditor/TimelineEditor';
 import SkillsEditor from '../../components/admin/SkillsEditor/SkillsEditor';
+import ServiceEditor from '../../components/admin/ServiceEditor/ServiceEditor'; // ADDED
 import ProjectsEditor from '../../components/admin/ProjectsEditor/ProjectsEditor';
 import CertificationsEditor from '../../components/admin/CertificationsEditor/CertificationsEditor';
 import ContactEditor from '../../components/admin/ContactEditor/ContactEditor';
@@ -25,6 +26,8 @@ const AdminDashboard = () => {
         return <TimelineEditor />;
       case 'skills':
         return <SkillsEditor />;
+      case 'services': // ADDED
+        return <ServiceEditor />;
       case 'projects':
         return <ProjectsEditor />;
       case 'certifications':

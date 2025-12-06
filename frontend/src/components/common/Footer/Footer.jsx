@@ -5,13 +5,18 @@ import styles from './Footer.module.css';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  const { contact } = useContent();
+  const { contact, services } = useContent();
 
   const primaryEmail = contact?.emails?.find(e => e.isPrimary) || contact?.emails?.[0];
   const primaryPhone = contact?.phoneNumbers?.find(p => p.isPrimary) || contact?.phoneNumbers?.[0];
   
   const sortedSocialLinks = contact?.socialLinks 
     ? [...contact.socialLinks].sort((a, b) => a.order - b.order)
+    : [];
+
+  // Get services that should show in footer
+  const footerServices = services
+    ? services.filter(s => s.isActive && s.showInFooter).sort((a, b) => a.order - b.order)
     : [];
 
   const scrollToSection = (sectionId) => {
@@ -79,20 +84,30 @@ const Footer = () => {
 
           <div className={styles.footerSection}>
             <h4>Services</h4>
-            <ul className={styles.linkList}>
-              <li>
-                <i className="fa-solid fa-code"></i> Web Development
-              </li>
-              <li>
-                <i className="fa-solid fa-pen-ruler"></i> UI/UX Design
-              </li>
-              <li>
-                <i className="fa-solid fa-gears"></i> API Development
-              </li>
-              <li>
-                <i className="fa-solid fa-user-tie"></i> Consulting
-              </li>
-            </ul>
+            {footerServices.length > 0 ? (
+              <ul className={styles.linkList}>
+                {footerServices.map((service) => (
+                  <li key={service._id}>
+                    <i className={`fa-solid ${service.icon}`}></i> {service.title}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <ul className={styles.linkList}>
+                <li>
+                  <i className="fa-solid fa-code"></i> Web Development
+                </li>
+                <li>
+                  <i className="fa-solid fa-pen-ruler"></i> UI/UX Design
+                </li>
+                <li>
+                  <i className="fa-solid fa-gears"></i> API Development
+                </li>
+                <li>
+                  <i className="fa-solid fa-user-tie"></i> Consulting
+                </li>
+              </ul>
+            )}
           </div>
 
           <div className={styles.footerSection}>

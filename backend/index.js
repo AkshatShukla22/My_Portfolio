@@ -1,4 +1,4 @@
-// backend/server.js
+// backend/index.js
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -53,7 +53,7 @@ app.use('/api/certifications', certificationRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/theme', themeRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/contact', contactRoutes); // ADD THIS LINE
+app.use('/api/contact', contactRoutes); 
 
 // Error handler
 app.use(errorHandler);
