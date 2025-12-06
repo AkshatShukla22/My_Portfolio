@@ -39,7 +39,6 @@ const SkillsEditor = () => {
     category: 'programming',
     proficiency: 80,
     displayInMarquee: true,
-    order: 0,
     fontAwesomeIcon: '',
   });
   const [logo, setLogo] = useState(null);
@@ -68,7 +67,6 @@ const SkillsEditor = () => {
       category: skill.category || 'programming',
       proficiency: skill.proficiency || 80,
       displayInMarquee: skill.displayInMarquee !== false,
-      order: skill.order || 0,
       fontAwesomeIcon: skill.fontAwesomeIcon || '',
     });
     setLogo(skill.logo);
@@ -90,6 +88,7 @@ const SkillsEditor = () => {
         await api.put(`/skills/${editingSkill._id}`, payload);
         setMessage({ type: 'success', text: 'Skill updated successfully!' });
       } else {
+        // Order will be auto-assigned by backend
         await api.post('/skills', payload);
         setMessage({ type: 'success', text: 'Skill created successfully!' });
       }
@@ -121,6 +120,40 @@ const SkillsEditor = () => {
     }
   };
 
+  const handleMoveUp = async (skill, categorySkills) => {
+    const currentIndex = categorySkills.findIndex(s => s._id === skill._id);
+    if (currentIndex === 0) return; // Already at top
+
+    const prevSkill = categorySkills[currentIndex - 1];
+    
+    try {
+      // Swap orders
+      await api.put(`/skills/${skill._id}`, { order: prevSkill.order });
+      await api.put(`/skills/${prevSkill._id}`, { order: skill.order });
+      await refreshContent();
+      setMessage({ type: 'success', text: 'Order updated!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to update order' });
+    }
+  };
+
+  const handleMoveDown = async (skill, categorySkills) => {
+    const currentIndex = categorySkills.findIndex(s => s._id === skill._id);
+    if (currentIndex === categorySkills.length - 1) return; // Already at bottom
+
+    const nextSkill = categorySkills[currentIndex + 1];
+    
+    try {
+      // Swap orders
+      await api.put(`/skills/${skill._id}`, { order: nextSkill.order });
+      await api.put(`/skills/${nextSkill._id}`, { order: skill.order });
+      await refreshContent();
+      setMessage({ type: 'success', text: 'Order updated!' });
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to update order' });
+    }
+  };
+
   const resetForm = () => {
     setEditingSkill(null);
     setShowForm(false);
@@ -129,14 +162,13 @@ const SkillsEditor = () => {
       category: 'programming',
       proficiency: 80,
       displayInMarquee: true,
-      order: 0,
       fontAwesomeIcon: '',
     });
     setLogo(null);
   };
 
   const getCategorySkills = (category) => {
-    return skillsList.filter(s => s.category === category);
+    return skillsList.filter(s => s.category === category).sort((a, b) => a.order - b.order);
   };
 
   const getCategoryLabel = (value) => {
@@ -147,7 +179,7 @@ const SkillsEditor = () => {
     <div className={styles.editorContainer}>
       <div className={styles.editorHeader}>
         <h2>Skills Management</h2>
-        <p>Manage all your skills across any domain - from technical to soft skills</p>
+        <p>Manage all your skills across any domain - order is automatically managed</p>
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
@@ -217,21 +249,6 @@ const SkillsEditor = () => {
                   0-100 scale representing your skill level
                 </small>
               </div>
-
-              <div className={styles.formGroup}>
-                <label htmlFor="order">Display Order</label>
-                <input
-                  type="number"
-                  id="order"
-                  name="order"
-                  value={formData.order}
-                  onChange={handleChange}
-                  min="0"
-                />
-                <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem' }}>
-                  Lower numbers appear first
-                </small>
-              </div>
             </div>
 
             <div className={styles.formGroup}>
@@ -247,16 +264,16 @@ const SkillsEditor = () => {
                 <span>Display in Animated Marquee</span>
               </label>
               <small style={{ color: 'var(--text-secondary)', display: 'block', marginTop: '0.25rem', marginLeft: '26px' }}>
-                Show this skill in the scrolling banner at the top of the skills section
+                Show this skill in the scrolling banner
               </small>
             </div>
           </div>
 
           {/* Font Awesome Icon Section */}
           <div className={styles.formSection}>
-            <h3>Icon (Font Awesome - Optional)</h3>
+            <h3>Icon (Font Awesome - For Marquee)</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              Enter Font Awesome class for icon display (e.g., "fab fa-react", "fab fa-python", "fas fa-brain")
+              This icon will be used in the <strong>marquee section</strong>. If not provided, uploaded image will be used instead.
               <br />
               <a href="https://fontawesome.com/search?o=r&m=free" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary-color)' }}>
                 🔍 Search Font Awesome Icons →
@@ -284,7 +301,7 @@ const SkillsEditor = () => {
                 borderRadius: 'var(--radius-md)',
                 textAlign: 'center'
               }}>
-                <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Preview:</p>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Icon Preview (Marquee):</p>
                 <i 
                   className={formData.fontAwesomeIcon}
                   style={{ 
@@ -301,15 +318,13 @@ const SkillsEditor = () => {
 
           {/* Logo Upload Section */}
           <div className={styles.formSection}>
-            <h3>Custom Logo/Image (Optional)</h3>
+            <h3>Skill Image (For Skills Grid Display)</h3>
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>
-              Upload a custom image for this skill. This will be used:
+              Upload an image to display in the <strong>skills grid section</strong> with percentages.
               <br />
-              • In the skills grid section
+              • Will also be used in <strong>marquee if no Font Awesome icon</strong> is provided above
               <br />
-              • In the marquee <strong>if no Font Awesome icon is provided</strong>
-              <br />
-              <em>Recommended: Square images (PNG/SVG) with transparent backgrounds work best</em>
+              <em>Recommended: Square images (PNG/SVG) with transparent backgrounds</em>
             </p>
             <FileUploader
               key={editingSkill?._id || 'new'}
@@ -328,7 +343,7 @@ const SkillsEditor = () => {
                 fontSize: '0.9rem',
                 color: '#fbbf24'
               }}>
-                ⚠️ No icon or image provided. A letter placeholder will be shown in the marquee.
+                ⚠️ No icon or image provided. A letter placeholder will be used.
               </div>
             )}
           </div>
@@ -357,6 +372,9 @@ const SkillsEditor = () => {
       ) : (
         <div className={styles.formSection}>
           <h3>Skills by Category</h3>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+            Use ↑↓ arrows to reorder skills within each category
+          </p>
 
           {SKILL_CATEGORIES.map(category => {
             const categorySkills = getCategorySkills(category.value);
@@ -374,10 +392,10 @@ const SkillsEditor = () => {
 
                 <div style={{ 
                   display: 'grid', 
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', 
+                  gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', 
                   gap: '1rem' 
                 }}>
-                  {categorySkills.map((skill) => (
+                  {categorySkills.map((skill, index) => (
                     <div
                       key={skill._id}
                       style={{
@@ -388,20 +406,8 @@ const SkillsEditor = () => {
                         textAlign: 'center',
                       }}
                     >
-                      {skill.fontAwesomeIcon ? (
-                        <i 
-                          className={skill.fontAwesomeIcon}
-                          style={{
-                            fontSize: '3rem',
-                            display: 'block',
-                            marginBottom: '0.5rem',
-                            background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                            backgroundClip: 'text',
-                          }}
-                        ></i>
-                      ) : skill.logo?.url ? (
+                      {/* Show icon for marquee preview, image for grid */}
+                      {skill.logo?.url ? (
                         <img
                           src={skill.logo.url}
                           alt={skill.name}
@@ -415,6 +421,19 @@ const SkillsEditor = () => {
                             marginRight: 'auto',
                           }}
                         />
+                      ) : skill.fontAwesomeIcon ? (
+                        <i 
+                          className={skill.fontAwesomeIcon}
+                          style={{
+                            fontSize: '3rem',
+                            display: 'block',
+                            marginBottom: '0.5rem',
+                            background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            backgroundClip: 'text',
+                          }}
+                        ></i>
                       ) : (
                         <div style={{
                           width: '60px',
@@ -475,7 +494,45 @@ const SkillsEditor = () => {
                         </span>
                       )}
 
-                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
+                      <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                        {/* Order controls */}
+                        <button
+                          onClick={() => handleMoveUp(skill, categorySkills)}
+                          disabled={index === 0}
+                          style={{
+                            padding: '0.5rem',
+                            background: index === 0 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(99, 102, 241, 0.2)',
+                            color: index === 0 ? 'var(--text-secondary)' : 'var(--primary-color)',
+                            border: '1px solid rgba(99, 102, 241, 0.3)',
+                            borderRadius: 'var(--radius-sm)',
+                            cursor: index === 0 ? 'not-allowed' : 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            flex: '0 0 auto',
+                          }}
+                          title="Move up"
+                        >
+                          ↑
+                        </button>
+                        <button
+                          onClick={() => handleMoveDown(skill, categorySkills)}
+                          disabled={index === categorySkills.length - 1}
+                          style={{
+                            padding: '0.5rem',
+                            background: index === categorySkills.length - 1 ? 'rgba(255, 255, 255, 0.05)' : 'rgba(99, 102, 241, 0.2)',
+                            color: index === categorySkills.length - 1 ? 'var(--text-secondary)' : 'var(--primary-color)',
+                            border: '1px solid rgba(99, 102, 241, 0.3)',
+                            borderRadius: 'var(--radius-sm)',
+                            cursor: index === categorySkills.length - 1 ? 'not-allowed' : 'pointer',
+                            fontSize: '0.85rem',
+                            fontWeight: 600,
+                            flex: '0 0 auto',
+                          }}
+                          title="Move down"
+                        >
+                          ↓
+                        </button>
+                        
                         <button
                           onClick={() => handleEdit(skill)}
                           style={{

@@ -28,7 +28,7 @@ const LogoMarquee = ({ skills }) => {
         {skills.map((skill, index) => (
           <div key={`${skill._id}-${index}`} className={styles.marqueeItem}>
             <div className={styles.iconCircle}>
-              {/* Priority: Font Awesome Icon > Uploaded Image > Fallback Letter */}
+              {/* MARQUEE PRIORITY: Font Awesome Icon > Uploaded Image > Fallback Letter */}
               {skill.fontAwesomeIcon ? (
                 <i className={skill.fontAwesomeIcon}></i>
               ) : skill.logo?.url ? (

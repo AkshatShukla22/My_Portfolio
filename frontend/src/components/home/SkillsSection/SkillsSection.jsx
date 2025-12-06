@@ -66,6 +66,11 @@ const SkillsSection = ({ data }) => {
     groupedSkills[category].push(skill);
   });
 
+  // Sort skills within each category by order
+  Object.keys(groupedSkills).forEach(category => {
+    groupedSkills[category].sort((a, b) => a.order - b.order);
+  });
+
   return (
     <section ref={sectionRef} className={styles.skillsSection} id="skills">
       <div className={styles.container}>
@@ -88,10 +93,10 @@ const SkillsSection = ({ data }) => {
           </div>
         ) : (
           <>
-            {/* All skills marquee */}
+            {/* Marquee: Shows icons first, then images */}
             <LogoMarquee skills={skillsArray.filter((s) => s.displayInMarquee !== false)} />
 
-            {/* Categorized skills */}
+            {/* Categorized skills grid */}
             <div className={styles.categories}>
               {Object.entries(groupedSkills).map(([category, skills]) => {
                 if (skills.length === 0) return null;
@@ -102,8 +107,19 @@ const SkillsSection = ({ data }) => {
                     <div className={styles.skillGrid}>
                       {skills.map((skill) => (
                         <div key={skill._id} className={styles.skillCard}>
-                          {/* Display priority: Font Awesome Icon > Uploaded Image > Fallback */}
-                          {skill.fontAwesomeIcon ? (
+                          {/* GRID PRIORITY: Uploaded Image > Font Awesome Icon > Fallback */}
+                          {skill.logo?.url ? (
+                            <img 
+                              src={skill.logo.url} 
+                              alt={skill.name}
+                              className={styles.skillLogo}
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                                const fallback = e.target.parentElement.querySelector('.fallback');
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                          ) : skill.fontAwesomeIcon ? (
                             <i 
                               className={skill.fontAwesomeIcon}
                               style={{
@@ -115,23 +131,12 @@ const SkillsSection = ({ data }) => {
                                 backgroundClip: 'text',
                               }}
                             ></i>
-                          ) : skill.logo?.url ? (
-                            <img 
-                              src={skill.logo.url} 
-                              alt={skill.name}
-                              className={styles.skillLogo}
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                const fallback = e.target.parentElement.querySelector('.fallback');
-                                if (fallback) fallback.style.display = 'flex';
-                              }}
-                            />
                           ) : null}
                           
                           {/* Fallback placeholder */}
                           <div 
                             className={`${styles.placeholderLogo} fallback`}
-                            style={{ display: (skill.fontAwesomeIcon || skill.logo?.url) ? 'none' : 'flex' }}
+                            style={{ display: (skill.logo?.url || skill.fontAwesomeIcon) ? 'none' : 'flex' }}
                           >
                             {skill.name.charAt(0).toUpperCase()}
                           </div>
