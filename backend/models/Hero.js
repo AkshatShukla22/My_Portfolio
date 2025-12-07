@@ -6,7 +6,12 @@ const heroSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  subtitle: String,
+  // Remove old subtitle field completely
+  subtitles: {
+    type: [String],
+    default: ['Full Stack Developer'],
+    required: true,
+  },
   description: String,
   profileImage: {
     url: String,
@@ -39,6 +44,9 @@ const heroSchema = new mongoose.Schema({
       default: 'fadeIn',
     }
   }
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  strict: false // Allow extra fields during migration
+});
 
 export default mongoose.model('Hero', heroSchema);

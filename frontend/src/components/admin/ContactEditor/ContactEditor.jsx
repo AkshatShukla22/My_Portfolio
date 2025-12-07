@@ -8,8 +8,11 @@ const PLATFORM_ICONS = {
   github: 'fa-github',
   linkedin: 'fa-linkedin',
   twitter: 'fa-x-twitter',
-  leetcode: 'fa-code',
-  geeksforgeeks: 'fa-code',
+  leetcode: 'fa-laptop-code',        // ✅ Fixed
+  geeksforgeeks: 'fa-laptop-code',   // ✅ Fixed
+  codechef: 'fa-laptop-code',        // Added
+  codeforces: 'fa-laptop-code',      // Added
+  hackerrank: 'fa-laptop-code',      // Added
   instagram: 'fa-instagram',
   facebook: 'fa-facebook',
   youtube: 'fa-youtube',
@@ -19,6 +22,16 @@ const PLATFORM_ICONS = {
   codepen: 'fa-codepen',
   dribbble: 'fa-dribbble',
   behance: 'fa-behance'
+};
+
+// Helper to determine if icon should use fa-solid or fa-brands
+const getIconClassName = (platform, icon) => {
+  const solidPlatforms = ['leetcode', 'geeksforgeeks', 'codechef', 'codeforces', 'hackerrank'];
+  
+  if (solidPlatforms.includes(platform.toLowerCase())) {
+    return `fa-solid ${icon}`;
+  }
+  return `fa-brands ${icon}`;
 };
 
 const ContactEditor = () => {
@@ -561,7 +574,8 @@ const ContactEditor = () => {
           {contact?.socialLinks?.sort((a, b) => a.order - b.order).map((link) => (
             <div key={link._id} className={styles.listItem}>
               <div>
-                <i className={`fa-brands ${link.icon}`}></i>
+                {/* ✅ FIXED: Use helper function to get correct icon class */}
+                <i className={getIconClassName(link.platform, link.icon)}></i>
                 <strong>{link.platform}</strong>: {link.url}
               </div>
               <div className={styles.itemActions}>

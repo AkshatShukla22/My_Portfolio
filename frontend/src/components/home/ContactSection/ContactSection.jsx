@@ -5,6 +5,16 @@ import { useContent } from '../../../context/ContentContext';
 import api from '../../../utils/api';
 import styles from './ContactSection.module.css';
 
+// Helper to determine if icon should use fa-solid or fa-brands
+const getIconClassName = (platform, icon) => {
+  const solidPlatforms = ['leetcode', 'geeksforgeeks', 'codechef', 'codeforces', 'hackerrank'];
+  
+  if (solidPlatforms.includes(platform.toLowerCase())) {
+    return `fa-solid ${icon}`;
+  }
+  return `fa-brands ${icon}`;
+};
+
 const ContactSection = () => {
   const { contact } = useContent();
   const [formData, setFormData] = useState({
@@ -248,7 +258,8 @@ const ContactSection = () => {
                       className={styles.socialIcon}
                       title={link.platform}
                     >
-                      <i className={`fa-brands ${link.icon}`}></i>
+                      {/* ✅ FIXED: Use helper function to get correct icon class */}
+                      <i className={getIconClassName(link.platform, link.icon)}></i>
                     </a>
                   ))}
                 </div>

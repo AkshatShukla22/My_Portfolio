@@ -1,17 +1,76 @@
 // frontend/src/components/home/HeroSection/HeroSection.jsx
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import { Github, Linkedin, Twitter, Mail, Globe, Code2, Award } from 'lucide-react';
 import Hero3DModel from './Hero3DModel';
+import { useContent } from '../../../context/ContentContext';
 import styles from './HeroSection.module.css';
 import { fadeInUp, fadeInLeft } from '../../../utils/animations';
 
 const HeroSection = ({ data }) => {
+  const { contact } = useContent();
   const heroRef = useRef(null);
   const titleRef = useRef(null);
   const subtitleRef = useRef(null);
   const descRef = useRef(null);
   const imageRef = useRef(null);
   const ctaRef = useRef(null);
+  const [currentSubtitle, setCurrentSubtitle] = useState('');
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+
+  // Letter-by-letter animation for subtitles
+  useEffect(() => {
+    if (!data?.subtitles || data.subtitles.length === 0) return;
+
+    const subtitles = data.subtitles;
+    let charIndex = 0;
+    let isDeleting = false;
+    let timeoutId = null;
+
+    const typeSpeed = 100;
+    const deleteSpeed = 50;
+    const pauseTime = 2000;
+    const delayBeforeNextWord = 500;
+
+    const type = () => {
+      const currentFullText = subtitles[subtitleIndex];
+
+      if (!isDeleting) {
+        // Typing
+        if (charIndex < currentFullText.length) {
+          setCurrentSubtitle(currentFullText.substring(0, charIndex + 1));
+          charIndex++;
+          timeoutId = setTimeout(type, typeSpeed);
+        } else {
+          // Finished typing, pause then start deleting
+          isDeleting = true;
+          timeoutId = setTimeout(type, pauseTime);
+        }
+      } else {
+        // Deleting
+        if (charIndex > 0) {
+          setCurrentSubtitle(currentFullText.substring(0, charIndex - 1));
+          charIndex--;
+          timeoutId = setTimeout(type, deleteSpeed);
+        } else {
+          // Finished deleting, move to next subtitle
+          isDeleting = false;
+          setSubtitleIndex((prev) => (prev + 1) % subtitles.length);
+          timeoutId = setTimeout(type, delayBeforeNextWord);
+        }
+      }
+    };
+
+    // Start the animation after a brief delay
+    timeoutId = setTimeout(type, 1000);
+
+    // Cleanup function
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [data?.subtitles, subtitleIndex]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -25,10 +84,27 @@ const HeroSection = ({ data }) => {
     return () => ctx.revert();
   }, [data]);
 
-  // Debug: Log data
-  useEffect(() => {
-    console.log('Hero Section Data:', data);
-  }, [data]);
+  // Get icon for social link
+  const getSocialIcon = (platform) => {
+    const iconMap = {
+      github: Github,
+      linkedin: Linkedin,
+      twitter: Twitter,
+      email: Mail,
+      portfolio: Globe,
+      leetcode: Code2,
+      gfg: Code2, // GeeksforGeeks
+      codechef: Code2,
+      codeforces: Code2,
+      hackerrank: Code2,
+      website: Globe,
+      blog: Globe,
+    };
+
+    const key = platform.toLowerCase();
+    const Icon = iconMap[key] || Globe;
+    return <Icon size={20} />;
+  };
 
   return (
     <section ref={heroRef} className={styles.hero} id="hero">
@@ -38,13 +114,33 @@ const HeroSection = ({ data }) => {
             {data?.title || 'Your Name'}
           </h1>
           <h2 ref={subtitleRef} className={styles.subtitle}>
-            {data?.subtitle || 'Full Stack Developer'}
+            {currentSubtitle}
+            <span className={styles.cursor}>|</span>
           </h2>
           {data?.description && (
             <p ref={descRef} className={styles.description}>
               {data.description}
             </p>
           )}
+
+          {/* Social Links */}
+          {contact?.socialLinks && contact.socialLinks.length > 0 && (
+            <div className={styles.socialLinks}>
+              {contact.socialLinks.map((link, index) => (
+                <a
+                  key={index}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                  title={link.platform}
+                >
+                  {getSocialIcon(link.platform)}
+                </a>
+              ))}
+            </div>
+          )}
+
           {data?.ctaText && data?.ctaLink && (
             <a 
               ref={ctaRef}

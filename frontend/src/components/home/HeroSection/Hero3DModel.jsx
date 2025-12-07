@@ -17,14 +17,14 @@ const Hero3DModel = ({ type = 'cube' }) => {
     const scene = new THREE.Scene();
     sceneRef.current = scene;
 
-    // Camera setup
+    // Camera setup - adjusted for better visibility
     const camera = new THREE.PerspectiveCamera(
-      75,
+      45,
       containerRef.current.clientWidth / containerRef.current.clientHeight,
       0.1,
       1000
     );
-    camera.position.z = 5;
+    camera.position.z = 7;
 
     // Renderer setup
     const renderer = new THREE.WebGLRenderer({ 
@@ -39,17 +39,21 @@ const Hero3DModel = ({ type = 'cube' }) => {
     containerRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    // Lighting - enhanced for better visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    const pointLight1 = new THREE.PointLight(0x6366f1, 1);
+    const pointLight1 = new THREE.PointLight(0x6366f1, 1.2);
     pointLight1.position.set(5, 5, 5);
     scene.add(pointLight1);
 
-    const pointLight2 = new THREE.PointLight(0xec4899, 0.5);
+    const pointLight2 = new THREE.PointLight(0xec4899, 0.8);
     pointLight2.position.set(-5, -5, -5);
     scene.add(pointLight2);
+
+    const pointLight3 = new THREE.PointLight(0xa855f7, 0.5);
+    pointLight3.position.set(0, 5, -5);
+    scene.add(pointLight3);
 
     // Create geometry based on type
     let geometry;
@@ -66,17 +70,49 @@ const Hero3DModel = ({ type = 'cube' }) => {
         const laptopGroup = new THREE.Group();
         
         // Screen
-        const screenGeom = new THREE.BoxGeometry(2, 1.5, 0.05);
-        const screen = new THREE.Mesh(screenGeom, material);
+        const screenGeom = new THREE.BoxGeometry(2.2, 1.6, 0.08);
+        const screenMat = new THREE.MeshStandardMaterial({
+          color: 0x6366f1,
+          metalness: 0.8,
+          roughness: 0.1,
+        });
+        const screen = new THREE.Mesh(screenGeom, screenMat);
         screen.position.y = 0.5;
-        screen.rotation.x = -0.2;
+        screen.rotation.x = -0.25;
         laptopGroup.add(screen);
         
+        // Screen frame
+        const frameEdges = new THREE.EdgesGeometry(screenGeom);
+        const frameMat = new THREE.LineBasicMaterial({ 
+          color: 0xec4899,
+          linewidth: 2 
+        });
+        const frameWire = new THREE.LineSegments(frameEdges, frameMat);
+        frameWire.position.copy(screen.position);
+        frameWire.rotation.copy(screen.rotation);
+        laptopGroup.add(frameWire);
+        
         // Base/Keyboard
-        const baseGeom = new THREE.BoxGeometry(2, 0.1, 1.5);
+        const baseGeom = new THREE.BoxGeometry(2.2, 0.1, 1.5);
         const base = new THREE.Mesh(baseGeom, material);
-        base.position.y = -0.3;
+        base.position.y = -0.35;
         laptopGroup.add(base);
+        
+        // Keyboard keys (decorative) - fewer keys for better performance
+        const keyGeom = new THREE.BoxGeometry(0.12, 0.04, 0.12);
+        const keyMat = new THREE.MeshStandardMaterial({
+          color: 0x8b5cf6,
+          metalness: 0.5,
+          roughness: 0.3,
+        });
+        
+        for (let i = -3; i < 4; i++) {
+          for (let j = -2; j < 3; j++) {
+            const key = new THREE.Mesh(keyGeom, keyMat);
+            key.position.set(i * 0.3, -0.3, j * 0.3);
+            laptopGroup.add(key);
+          }
+        }
         
         scene.add(laptopGroup);
         meshRef.current = laptopGroup;
@@ -85,9 +121,20 @@ const Hero3DModel = ({ type = 'cube' }) => {
 
       case 'sphere':
         geometry = new THREE.Mesh(
-          new THREE.SphereGeometry(1.5, 32, 32),
+          new THREE.SphereGeometry(1.6, 32, 32),
           material
         );
+        
+        // Add wireframe overlay
+        const sphereWire = new THREE.Mesh(
+          new THREE.SphereGeometry(1.62, 16, 16),
+          new THREE.MeshBasicMaterial({
+            color: 0xec4899,
+            wireframe: true,
+          })
+        );
+        geometry.add(sphereWire);
+        
         scene.add(geometry);
         meshRef.current = geometry;
         break;
@@ -107,6 +154,27 @@ const Hero3DModel = ({ type = 'cube' }) => {
         });
         const wireframe = new THREE.LineSegments(edges, lineMaterial);
         geometry.add(wireframe);
+        
+        // Add corner spheres for visual interest
+        const cornerGeom = new THREE.SphereGeometry(0.12, 16, 16);
+        const cornerMat = new THREE.MeshStandardMaterial({
+          color: 0xa855f7,
+          metalness: 0.9,
+          roughness: 0.1,
+        });
+        
+        const positions = [
+          [1, 1, 1], [-1, 1, 1],
+          [1, -1, 1], [-1, -1, 1],
+          [1, 1, -1], [-1, 1, -1],
+          [1, -1, -1], [-1, -1, -1],
+        ];
+        
+        positions.forEach(pos => {
+          const corner = new THREE.Mesh(cornerGeom, cornerMat);
+          corner.position.set(...pos);
+          geometry.add(corner);
+        });
         
         scene.add(geometry);
         meshRef.current = geometry;
@@ -159,14 +227,20 @@ const Hero3DModel = ({ type = 'cube' }) => {
         cancelAnimationFrame(animationIdRef.current);
       }
       
-      if (rendererRef.current && containerRef.current) {
+      if (rendererRef.current && containerRef.current && containerRef.current.contains(rendererRef.current.domElement)) {
         containerRef.current.removeChild(rendererRef.current.domElement);
       }
       
       // Dispose of Three.js resources
       if (meshRef.current) {
         if (meshRef.current.geometry) meshRef.current.geometry.dispose();
-        if (meshRef.current.material) meshRef.current.material.dispose();
+        if (meshRef.current.material) {
+          if (Array.isArray(meshRef.current.material)) {
+            meshRef.current.material.forEach(mat => mat.dispose());
+          } else {
+            meshRef.current.material.dispose();
+          }
+        }
       }
       
       renderer.dispose();

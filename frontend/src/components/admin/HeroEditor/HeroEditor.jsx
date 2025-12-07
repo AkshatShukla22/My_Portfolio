@@ -9,7 +9,7 @@ const HeroEditor = () => {
   const { hero, refreshContent } = useContent();
   const [formData, setFormData] = useState({
     title: '',
-    subtitle: '',
+    subtitles: ['Full Stack Developer'],
     description: '',
     ctaText: '',
     ctaLink: '',
@@ -26,12 +26,25 @@ const HeroEditor = () => {
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [newSubtitle, setNewSubtitle] = useState('');
 
   useEffect(() => {
+    console.log('🔍 Hero data received:', hero);
     if (hero) {
+      // Handle both old subtitle (string) and new subtitles (array)
+      let subtitlesArray = ['Full Stack Developer'];
+      
+      if (Array.isArray(hero.subtitles) && hero.subtitles.length > 0) {
+        subtitlesArray = hero.subtitles;
+        console.log('✅ Using subtitles array:', subtitlesArray);
+      } else if (hero.subtitle) {
+        subtitlesArray = [hero.subtitle];
+        console.log('⚠️ Converting old subtitle to array:', subtitlesArray);
+      }
+
       setFormData({
         title: hero.title || '',
-        subtitle: hero.subtitle || '',
+        subtitles: subtitlesArray,
         description: hero.description || '',
         ctaText: hero.ctaText || '',
         ctaLink: hero.ctaLink || '',
@@ -66,23 +79,49 @@ const HeroEditor = () => {
     }
   };
 
+  const handleAddSubtitle = () => {
+    if (newSubtitle.trim()) {
+      const updatedSubtitles = [...formData.subtitles, newSubtitle.trim()];
+      console.log('➕ Adding subtitle. New array:', updatedSubtitles);
+      setFormData({
+        ...formData,
+        subtitles: updatedSubtitles,
+      });
+      setNewSubtitle('');
+    }
+  };
+
+  const handleRemoveSubtitle = (index) => {
+    const updatedSubtitles = formData.subtitles.filter((_, i) => i !== index);
+    console.log('➖ Removing subtitle. New array:', updatedSubtitles);
+    setFormData({
+      ...formData,
+      subtitles: updatedSubtitles,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ type: '', text: '' });
 
-    try {
-      const payload = {
-        ...formData,
-        profileImage,
-        backgroundImage,
-      };
+    const payload = {
+      ...formData,
+      profileImage,
+      backgroundImage,
+    };
 
-      await api.put('/hero', payload);
+    console.log('📤 Sending payload:', payload);
+
+    try {
+      const response = await api.put('/hero', payload);
+      console.log('📥 Response received:', response.data);
+      
       await refreshContent();
       
       setMessage({ type: 'success', text: 'Hero section updated successfully!' });
     } catch (error) {
+      console.error('❌ Error:', error);
       setMessage({
         type: 'error',
         text: error.response?.data?.message || 'Failed to update hero section',
@@ -123,15 +162,42 @@ const HeroEditor = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="subtitle">Subtitle</label>
-            <input
-              type="text"
-              id="subtitle"
-              name="subtitle"
-              value={formData.subtitle}
-              onChange={handleChange}
-              placeholder="Full Stack Developer"
-            />
+            <label>Subtitles (Rotating) - Current Count: {formData.subtitles.length}</label>
+            <div className={styles.subtitleList}>
+              {formData.subtitles.map((subtitle, index) => (
+                <div key={index} className={styles.subtitleItem}>
+                  <span>{subtitle}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveSubtitle(index)}
+                    className={styles.removeButton}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className={styles.addSubtitleContainer}>
+              <input
+                type="text"
+                value={newSubtitle}
+                onChange={(e) => setNewSubtitle(e.target.value)}
+                placeholder="Add new subtitle"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddSubtitle();
+                  }
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleAddSubtitle}
+                className={styles.addButton}
+              >
+                Add
+              </button>
+            </div>
           </div>
 
           <div className={styles.formGroup}>
