@@ -1,324 +1,269 @@
 // frontend/src/utils/animations.js
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ScrollSmoother } from 'gsap/ScrollSmoother';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 /**
- * Initialize smooth scroll
+ * Initialize smooth scroll functionality
+ * This creates a smooth scrolling effect using GSAP
  */
 export const initSmoothScroll = () => {
-  // Check if elements exist
-  const wrapper = document.querySelector('#smooth-wrapper');
-  const content = document.querySelector('#smooth-content');
-  
-  if (!wrapper || !content) {
-    console.warn('Smooth scroll elements not found');
-    return null;
+  const scrollWrapper = document.getElementById('smooth-wrapper');
+  const scrollContent = document.getElementById('smooth-content');
+
+  // If elements don't exist, return a dummy object
+  if (!scrollWrapper || !scrollContent) {
+    console.log('Smooth scroll elements not found - using native scroll');
+    return {
+      kill: () => {},
+    };
   }
+
+  let scrollInstance;
 
   try {
-    return ScrollSmoother.create({
-      wrapper: '#smooth-wrapper',
-      content: '#smooth-content',
-      smooth: 1.5,
+    // Configure smooth scroll
+    const smoothScrollConfig = {
+      wrapper: scrollWrapper,
+      content: scrollContent,
+      smooth: 1.2,
       effects: true,
-      smoothTouch: 0.1,
+      smoothTouch: false, // Disable on touch devices to prevent conflicts
+    };
+
+    // Initialize smooth scroll (if you have a library like Locomotive Scroll)
+    // If not using a library, we'll use GSAP-based smooth scroll
+    
+    // GSAP-based smooth scroll implementation
+    let currentScroll = 0;
+    let targetScroll = 0;
+    let ease = 0.075;
+
+    const updateScroll = () => {
+      targetScroll = window.scrollY;
+      currentScroll += (targetScroll - currentScroll) * ease;
+      
+      if (scrollContent) {
+        scrollContent.style.transform = `translateY(-${currentScroll}px)`;
+      }
+
+      requestAnimationFrame(updateScroll);
+    };
+
+    // Set up the scroll wrapper
+    scrollWrapper.style.position = 'fixed';
+    scrollWrapper.style.top = '0';
+    scrollWrapper.style.left = '0';
+    scrollWrapper.style.width = '100%';
+    scrollWrapper.style.height = '100%';
+    scrollWrapper.style.overflow = 'hidden';
+
+    // Set body height to enable scrolling
+    const setBodyHeight = () => {
+      document.body.style.height = `${scrollContent.offsetHeight}px`;
+    };
+
+    setBodyHeight();
+    window.addEventListener('resize', setBodyHeight);
+
+    // Start the animation loop
+    requestAnimationFrame(updateScroll);
+
+    // Create ScrollTrigger scroller proxy
+    ScrollTrigger.scrollerProxy(scrollWrapper, {
+      scrollTop(value) {
+        if (arguments.length) {
+          currentScroll = targetScroll = value;
+        }
+        return currentScroll;
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      },
     });
+
+    // Update ScrollTrigger when smooth scroll updates
+    ScrollTrigger.addEventListener('refresh', setBodyHeight);
+    ScrollTrigger.refresh();
+
+    scrollInstance = {
+      kill: () => {
+        window.removeEventListener('resize', setBodyHeight);
+        ScrollTrigger.removeEventListener('refresh', setBodyHeight);
+        ScrollTrigger.getAll().forEach(t => t.kill());
+        
+        // Reset styles
+        if (scrollWrapper) {
+          scrollWrapper.style.position = '';
+          scrollWrapper.style.top = '';
+          scrollWrapper.style.left = '';
+          scrollWrapper.style.width = '';
+          scrollWrapper.style.height = '';
+          scrollWrapper.style.overflow = '';
+        }
+        if (scrollContent) {
+          scrollContent.style.transform = '';
+        }
+        document.body.style.height = '';
+      },
+    };
+
+    return scrollInstance;
+
   } catch (error) {
-    console.error('ScrollSmoother initialization failed:', error);
-    return null;
+    console.error('Smooth scroll initialization failed:', error);
+    return {
+      kill: () => {},
+    };
   }
 };
 
 /**
- * Fade in up animation
+ * Smooth scroll to a specific element
+ * This is more reliable than smooth scroll libraries
  */
-export const fadeInUp = (element, delay = 0) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    y: 100,
-    opacity: 0,
-    duration: 1,
-    delay,
-    ease: 'power3.out',
-  });
-};
-
-/**
- * Fade in left animation
- */
-export const fadeInLeft = (element, delay = 0) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    x: -100,
-    opacity: 0,
-    duration: 1,
-    delay,
-    ease: 'power3.out',
-  });
-};
-
-/**
- * Fade in right animation
- */
-export const fadeInRight = (element, delay = 0) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    x: 100,
-    opacity: 0,
-    duration: 1,
-    delay,
-    ease: 'power3.out',
-  });
-};
-
-/**
- * Fade in animation
- */
-export const fadeIn = (element, delay = 0) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    opacity: 0,
-    duration: 1,
-    delay,
-    ease: 'power3.out',
-  });
-};
-
-/**
- * Scale in animation
- */
-export const scaleIn = (element, delay = 0) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    scale: 0,
-    opacity: 0,
-    duration: 0.8,
-    delay,
-    ease: 'back.out(1.7)',
-  });
-};
-
-/**
- * Stagger animation for lists
- */
-export const staggerReveal = (elements, delay = 0) => {
-  if (!elements || elements.length === 0) return null;
-  
-  return gsap.from(elements, {
-    y: 50,
-    opacity: 0,
-    duration: 0.8,
-    stagger: 0.2,
-    delay,
-    ease: 'power3.out',
-  });
-};
-
-/**
- * Scroll-triggered animation
- */
-export const scrollReveal = (element, options = {}) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    scrollTrigger: {
-      trigger: element,
-      start: 'top 80%',
-      end: 'bottom 20%',
-      toggleActions: 'play none none reverse',
-      ...options.scrollTrigger,
-    },
-    y: 100,
-    opacity: 0,
-    duration: 1,
-    ease: 'power3.out',
-    ...options,
-  });
-};
-
-/**
- * Parallax effect
- */
-export const parallax = (element, speed = 0.5) => {
-  if (!element) return null;
-  
-  return gsap.to(element, {
-    scrollTrigger: {
-      trigger: element,
-      start: 'top bottom',
-      end: 'bottom top',
-      scrub: true,
-    },
-    y: (i, target) => {
-      const dataSpeed = target.dataset?.speed;
-      return -ScrollTrigger.maxScroll(window) * (dataSpeed || speed);
-    },
-    ease: 'none',
-  });
-};
-
-/**
- * Scale on scroll
- */
-export const scaleOnScroll = (element) => {
-  if (!element) return null;
-  
-  return gsap.fromTo(
-    element,
-    { scale: 0.8, opacity: 0 },
-    {
-      scale: 1,
-      opacity: 1,
-      scrollTrigger: {
-        trigger: element,
-        start: 'top 80%',
-        end: 'top 30%',
-        scrub: 1,
-      },
+export const scrollToElement = (elementId, offset = 80, duration = 1.2) => {
+  return new Promise((resolve) => {
+    const element = document.getElementById(elementId);
+    
+    if (!element) {
+      console.warn(`Element with id "${elementId}" not found`);
+      resolve(false);
+      return;
     }
-  );
-};
 
-/**
- * Slide in animation
- */
-export const slideIn = (element, direction = 'up', delay = 0) => {
-  if (!element) return null;
-  
-  const directions = {
-    up: { y: 100 },
-    down: { y: -100 },
-    left: { x: -100 },
-    right: { x: 100 },
-  };
+    // Kill any ongoing scroll animations
+    gsap.killTweensOf(window);
 
-  return gsap.from(element, {
-    ...directions[direction],
-    opacity: 0,
-    duration: 1,
-    delay,
-    ease: 'power3.out',
-  });
-};
+    // Get element position
+    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+    const offsetPosition = elementPosition - offset;
 
-/**
- * Rotate in animation
- */
-export const rotateIn = (element, delay = 0) => {
-  if (!element) return null;
-  
-  return gsap.from(element, {
-    rotation: -180,
-    opacity: 0,
-    duration: 1,
-    delay,
-    ease: 'back.out(1.7)',
-  });
-};
-
-/**
- * Text reveal animation (character by character)
- */
-export const textReveal = (element, delay = 0) => {
-  if (!element) return null;
-  
-  const text = element.textContent;
-  element.textContent = '';
-  
-  const chars = text.split('');
-  chars.forEach(char => {
-    const span = document.createElement('span');
-    span.textContent = char === ' ' ? '\u00A0' : char;
-    span.style.display = 'inline-block';
-    element.appendChild(span);
-  });
-
-  return gsap.from(element.children, {
-    opacity: 0,
-    y: 20,
-    duration: 0.5,
-    delay,
-    stagger: 0.03,
-    ease: 'power2.out',
-  });
-};
-
-/**
- * Counter animation
- */
-export const animateCounter = (element, endValue, duration = 2, delay = 0) => {
-  if (!element) return null;
-  
-  const obj = { value: 0 };
-  
-  return gsap.to(obj, {
-    value: endValue,
-    duration,
-    delay,
-    ease: 'power1.out',
-    onUpdate: () => {
-      element.textContent = Math.floor(obj.value);
-    },
-  });
-};
-
-/**
- * Magnetic button effect
- */
-export const magneticButton = (button) => {
-  if (!button) return;
-
-  const handleMouseMove = (e) => {
-    const { left, top, width, height } = button.getBoundingClientRect();
-    const centerX = left + width / 2;
-    const centerY = top + height / 2;
-    const deltaX = e.clientX - centerX;
-    const deltaY = e.clientY - centerY;
-
-    gsap.to(button, {
-      x: deltaX * 0.3,
-      y: deltaY * 0.3,
-      duration: 0.3,
-      ease: 'power2.out',
+    // Use GSAP for smooth scrolling
+    gsap.to(window, {
+      duration: duration,
+      scrollTo: {
+        y: offsetPosition,
+        autoKill: true,
+      },
+      ease: 'power2.inOut',
+      onComplete: () => {
+        resolve(true);
+      },
+      onInterrupt: () => {
+        resolve(false);
+      },
     });
-  };
-
-  const handleMouseLeave = () => {
-    gsap.to(button, {
-      x: 0,
-      y: 0,
-      duration: 0.5,
-      ease: 'elastic.out(1, 0.5)',
-    });
-  };
-
-  button.addEventListener('mousemove', handleMouseMove);
-  button.addEventListener('mouseleave', handleMouseLeave);
-
-  return () => {
-    button.removeEventListener('mousemove', handleMouseMove);
-    button.removeEventListener('mouseleave', handleMouseLeave);
-  };
+  });
 };
 
 /**
- * Kill all ScrollTriggers
+ * Scroll to top of page
+ */
+export const scrollToTop = (duration = 1) => {
+  gsap.killTweensOf(window);
+  
+  gsap.to(window, {
+    duration: duration,
+    scrollTo: { y: 0 },
+    ease: 'power2.inOut',
+  });
+};
+
+/**
+ * Refresh all ScrollTrigger instances
+ */
+export const refreshScrollTrigger = () => {
+  ScrollTrigger.refresh();
+};
+
+/**
+ * Kill all ScrollTrigger instances
  */
 export const killAllScrollTriggers = () => {
   ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 };
 
 /**
- * Refresh ScrollTrigger
+ * Create a scroll-triggered animation
  */
-export const refreshScrollTrigger = () => {
-  ScrollTrigger.refresh();
+export const createScrollAnimation = (element, animationProps, triggerConfig = {}) => {
+  if (!element) return null;
+
+  const defaultTrigger = {
+    trigger: element,
+    start: 'top 80%',
+    end: 'bottom 20%',
+    toggleActions: 'play none none reverse',
+    ...triggerConfig,
+  };
+
+  return gsap.from(element, {
+    ...animationProps,
+    scrollTrigger: defaultTrigger,
+  });
+};
+
+/**
+ * Batch scroll animations for multiple elements
+ */
+export const batchScrollAnimation = (elements, animationProps, triggerConfig = {}) => {
+  if (!elements || elements.length === 0) return null;
+
+  return ScrollTrigger.batch(elements, {
+    onEnter: (batch) => {
+      gsap.from(batch, {
+        ...animationProps,
+        stagger: 0.15,
+      });
+    },
+    start: 'top 80%',
+    ...triggerConfig,
+  });
+};
+
+/**
+ * Initialize parallax effect
+ */
+export const initParallax = (element, speed = 0.5) => {
+  if (!element) return null;
+
+  return gsap.to(element, {
+    yPercent: -50 * speed,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: element,
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: true,
+    },
+  });
+};
+
+/**
+ * Fade in animation on scroll
+ */
+export const fadeInOnScroll = (elements, staggerDelay = 0.1) => {
+  if (!elements) return null;
+
+  const elementsArray = Array.isArray(elements) ? elements : [elements];
+
+  return gsap.from(elementsArray, {
+    y: 50,
+    opacity: 0,
+    duration: 0.8,
+    stagger: staggerDelay,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: elementsArray[0],
+      start: 'top 80%',
+    },
+  });
 };

@@ -1,12 +1,13 @@
 // frontend/src/pages/Home/Home.jsx
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useContent } from '../../context/ContentContext';
-import { initSmoothScroll } from '../../utils/animations';
+import { refreshScrollTrigger } from '../../utils/animations';
 import Navbar from '../../components/common/Navbar/Navbar';
 import Footer from '../../components/common/Footer/Footer';
 import HeroSection from '../../components/home/HeroSection/HeroSection';
 import JourneySection from '../../components/home/JourneySection/JourneySection';
 import TimelineSection from '../../components/home/TimelineSection/TimelineSection';
+import ExperienceSection from '../../components/home/ExperienceSection/ExperienceSection';
 import SkillsSection from '../../components/home/SkillsSection/SkillsSection';
 import ServicesSection from '../../components/home/ServicesSection/ServicesSection';
 import ProjectsSection from '../../components/home/ProjectsSection/ProjectsSection';
@@ -21,6 +22,7 @@ const Home = () => {
     hero, 
     journey, 
     timeline, 
+    experiences,
     skills, 
     services, 
     projects, 
@@ -29,24 +31,17 @@ const Home = () => {
     loading,
     isInitialized
   } = useContent();
-  
-  const smoothScrollRef = useRef(null);
 
-  // Initialize smooth scroll ONLY after content is loaded
+  // Refresh ScrollTrigger after content loads
   useEffect(() => {
-    if (!isInitialized || loading) return;
+    if (isInitialized && !loading) {
+      // Small delay to ensure all content is rendered
+      const timer = setTimeout(() => {
+        refreshScrollTrigger();
+      }, 500);
 
-    // Wait a bit for all content to render
-    const timer = setTimeout(() => {
-      smoothScrollRef.current = initSmoothScroll();
-    }, 300);
-
-    return () => {
-      clearTimeout(timer);
-      if (smoothScrollRef.current) {
-        smoothScrollRef.current.kill();
-      }
-    };
+      return () => clearTimeout(timer);
+    }
   }, [isInitialized, loading]);
 
   // Show loader until content is ready
@@ -55,27 +50,24 @@ const Home = () => {
   }
 
   return (
-    <div id="smooth-wrapper">
-      <div id="smooth-content">
-        <Navbar />
-        
-        <main className={styles.main}>
-          {hero && <HeroSection data={hero} />}
-          {journey && <JourneySection data={journey} />}
-          {timeline && <TimelineSection data={timeline} />}
-          {skills && skills.length > 0 && <SkillsSection data={skills} />}
-          {services && services.length > 0 && <ServicesSection data={services} />}
-          
-          {/* Always render ProjectsSection */}
-          <ProjectsSection data={projects} />
-          
-          {certifications && certifications.length > 0 && <CertificationsSection data={certifications} />}
-          {blogs && blogs.length > 0 && <BlogSection data={blogs} />}
-          <ContactSection />
-        </main>
+    <div className={styles.homeWrapper}>
+      <Navbar />
+      
+      <main className={styles.main}>
+        {/* All sections rendered - no conditional hiding */}
+        {hero && <HeroSection data={hero} />}
+        {journey && <JourneySection data={journey} />}
+        {timeline && <TimelineSection data={timeline} />}
+        {experiences && experiences.length > 0 && <ExperienceSection data={experiences} />}
+        {skills && skills.length > 0 && <SkillsSection data={skills} />}
+        {services && services.length > 0 && <ServicesSection data={services} />}
+        <ProjectsSection data={projects} />
+        {certifications && certifications.length > 0 && <CertificationsSection data={certifications} />}
+        {blogs && blogs.length > 0 && <BlogSection data={blogs} />}
+        <ContactSection />
+      </main>
 
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 };

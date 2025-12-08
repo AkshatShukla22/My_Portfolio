@@ -5,12 +5,13 @@
   left: 0;
   width: 100%;
   padding: 1.5rem 0;
-  z-index: var(--z-nav);
+  z-index: 1000; /* Increased z-index to ensure it's always on top */
   transition: var(--transition-normal);
+  pointer-events: auto; /* Ensure it's always interactive */
 }
 
 .navbar.scrolled {
-  background: rgba(15, 23, 42, 0.9);
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
   padding: 1rem 0;
@@ -34,7 +35,8 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
   transition: var(--transition-fast);
-  z-index: 11;
+  z-index: 1001;
+  position: relative;
 }
 
 .logo:hover {
@@ -64,6 +66,7 @@
   transition: var(--transition-fast);
   font-family: var(--font-primary);
   position: relative;
+  white-space: nowrap;
 }
 
 .navLinks button::after,
@@ -115,7 +118,8 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  z-index: 11;
+  z-index: 1001;
+  position: relative;
 }
 
 .mobileMenuButton span {
@@ -160,6 +164,7 @@
     gap: var(--spacing-lg);
     transition: right 0.4s ease;
     box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
   }
 
   .navLinks.mobileOpen {

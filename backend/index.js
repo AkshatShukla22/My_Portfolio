@@ -16,19 +16,16 @@ import skillRoutes from './routes/skillRoutes.js';
 import serviceRoutes from './routes/serviceRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import certificationRoutes from './routes/certificationRoutes.js';
+import experienceRoutes from './routes/experienceRoutes.js'; 
 import blogRoutes from './routes/blogRoutes.js';
 import themeRoutes from './routes/themeRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
-import contactRoutes from './routes/contactRoutes.js'; // ADD THIS LINE
+import contactRoutes from './routes/contactRoutes.js';
 
-// ES module fixes
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load env vars
 dotenv.config();
-
-// Connect to database
 connectDB();
 
 const app = express();
@@ -38,7 +35,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
@@ -50,12 +46,12 @@ app.use('/api/skills', skillRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/certifications', certificationRoutes);
+app.use('/api/experiences', experienceRoutes); // ADD THIS
 app.use('/api/blogs', blogRoutes);
 app.use('/api/theme', themeRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes); 
 
-// Error handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;

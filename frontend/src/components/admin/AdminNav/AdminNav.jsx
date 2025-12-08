@@ -10,8 +10,9 @@ const AdminNav = ({ activeTab, setActiveTab }) => {
     { id: 'hero', label: 'Hero Section', icon: 'fa-house' },
     { id: 'journey', label: 'Journey', icon: 'fa-person-biking' },
     { id: 'timeline', label: 'Timeline', icon: 'fa-calendar-days' },
+    { id: 'experience', label: 'Experience', icon: 'fa-briefcase' }, // ADD THIS
     { id: 'skills', label: 'Skills', icon: 'fa-code' },
-    { id: 'services', label: 'Services', icon: 'fa-gears' }, // ADDED
+    { id: 'services', label: 'Services', icon: 'fa-gears' },
     { id: 'projects', label: 'Projects', icon: 'fa-folder-open' },
     { id: 'certifications', label: 'Certifications', icon: 'fa-certificate' },
     { id: 'contact', label: 'Contact', icon: 'fa-address-book' },

@@ -20,6 +20,7 @@ export const ContentProvider = ({ children }) => {
   const [services, setServices] = useState([]);
   const [projects, setProjects] = useState([]);
   const [certifications, setCertifications] = useState([]);
+  const [experiences, setExperiences] = useState([]); // ADD THIS
   const [contact, setContact] = useState(null);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,6 +40,7 @@ export const ContentProvider = ({ children }) => {
           servicesRes,
           projectsRes,
           certificationsRes,
+          experiencesRes, // ADD THIS
           contactRes,
           blogsRes,
         ] = await Promise.all([
@@ -70,6 +72,10 @@ export const ContentProvider = ({ children }) => {
             console.error('Certifications fetch error:', err);
             return { data: { data: [] } };
           }),
+          api.get('/experiences').catch(err => { // ADD THIS
+            console.error('Experiences fetch error:', err);
+            return { data: { data: [] } };
+          }),
           api.get('/contact').catch(err => {
             console.error('Contact fetch error:', err);
             return { data: { data: null } };
@@ -87,6 +93,7 @@ export const ContentProvider = ({ children }) => {
         const servicesData = Array.isArray(servicesRes.data.data) ? servicesRes.data.data : [];
         const projectsData = Array.isArray(projectsRes.data.data) ? projectsRes.data.data : [];
         const certificationsData = Array.isArray(certificationsRes.data.data) ? certificationsRes.data.data : [];
+        const experiencesData = Array.isArray(experiencesRes.data.data) ? experiencesRes.data.data : []; // ADD THIS
         const contactData = contactRes.data.data || null;
         const blogsData = Array.isArray(blogsRes.data.data) ? blogsRes.data.data : [];
 
@@ -98,6 +105,7 @@ export const ContentProvider = ({ children }) => {
           services: servicesData.length,
           projects: projectsData.length,
           certifications: certificationsData.length,
+          experiences: experiencesData.length, // ADD THIS
           contact: !!contactData,
           blogs: blogsData.length
         });
@@ -109,6 +117,7 @@ export const ContentProvider = ({ children }) => {
         setServices(servicesData);
         setProjects(projectsData);
         setCertifications(certificationsData);
+        setExperiences(experiencesData); // ADD THIS
         setContact(contactData);
         setBlogs(blogsData);
         
@@ -120,6 +129,7 @@ export const ContentProvider = ({ children }) => {
         setServices([]);
         setProjects([]);
         setCertifications([]);
+        setExperiences([]); // ADD THIS
         setContact(null);
         setBlogs([]);
       } finally {
@@ -145,6 +155,7 @@ export const ContentProvider = ({ children }) => {
         servicesRes,
         projectsRes,
         certificationsRes,
+        experiencesRes, // ADD THIS
         contactRes,
         blogsRes,
       ] = await Promise.all([
@@ -155,6 +166,7 @@ export const ContentProvider = ({ children }) => {
         api.get('/services').catch(() => ({ data: { data: [] } })),
         api.get('/projects').catch(() => ({ data: { data: [] } })),
         api.get('/certifications').catch(() => ({ data: { data: [] } })),
+        api.get('/experiences').catch(() => ({ data: { data: [] } })), // ADD THIS
         api.get('/contact').catch(() => ({ data: { data: null } })),
         api.get('/blogs?published=true').catch(() => ({ data: { data: [] } })),
       ]);
@@ -168,6 +180,7 @@ export const ContentProvider = ({ children }) => {
       setServices(Array.isArray(servicesRes.data.data) ? servicesRes.data.data : []);
       setProjects(Array.isArray(projectsRes.data.data) ? projectsRes.data.data : []);
       setCertifications(Array.isArray(certificationsRes.data.data) ? certificationsRes.data.data : []);
+      setExperiences(Array.isArray(experiencesRes.data.data) ? experiencesRes.data.data : []); // ADD THIS
       setContact(contactRes.data.data || null);
       setBlogs(Array.isArray(blogsRes.data.data) ? blogsRes.data.data : []);
       
@@ -186,6 +199,7 @@ export const ContentProvider = ({ children }) => {
     services,
     projects,
     certifications,
+    experiences, // ADD THIS
     contact,
     blogs,
     loading,

@@ -4,8 +4,9 @@ import AdminNav from '../../components/admin/AdminNav/AdminNav';
 import HeroEditor from '../../components/admin/HeroEditor/HeroEditor';
 import JourneyEditor from '../../components/admin/JourneyEditor/JourneyEditor';
 import TimelineEditor from '../../components/admin/TimelineEditor/TimelineEditor';
+import ExperienceEditor from '../../components/admin/ExperienceEditor/ExperienceEditor'; // ADD THIS
 import SkillsEditor from '../../components/admin/SkillsEditor/SkillsEditor';
-import ServiceEditor from '../../components/admin/ServiceEditor/ServiceEditor'; // ADDED
+import ServiceEditor from '../../components/admin/ServiceEditor/ServiceEditor';
 import ProjectsEditor from '../../components/admin/ProjectsEditor/ProjectsEditor';
 import CertificationsEditor from '../../components/admin/CertificationsEditor/CertificationsEditor';
 import ContactEditor from '../../components/admin/ContactEditor/ContactEditor';
@@ -24,9 +25,11 @@ const AdminDashboard = () => {
         return <JourneyEditor />;
       case 'timeline':
         return <TimelineEditor />;
+      case 'experience': // ADD THIS CASE
+        return <ExperienceEditor />;
       case 'skills':
         return <SkillsEditor />;
-      case 'services': // ADDED
+      case 'services':
         return <ServiceEditor />;
       case 'projects':
         return <ProjectsEditor />;
