@@ -14,7 +14,6 @@
   z-index: 1;
 }
 
-/* Ensure all sections are visible and positioned correctly */
 .main > section {
   position: relative;
   width: 100%;
