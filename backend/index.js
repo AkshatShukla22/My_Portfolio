@@ -46,7 +46,7 @@ app.use('/api/skills', skillRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/certifications', certificationRoutes);
-app.use('/api/experiences', experienceRoutes); // ADD THIS
+app.use('/api/experiences', experienceRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/theme', themeRoutes);
 app.use('/api/upload', uploadRoutes);

@@ -267,3 +267,93 @@ export const fadeInOnScroll = (elements, staggerDelay = 0.1) => {
     },
   });
 };
+
+/**
+ * Fade in up animation
+ */
+export const fadeInUp = (element, delay = 0) => {
+  if (!element) return null;
+
+  return gsap.from(element, {
+    y: 60,
+    opacity: 0,
+    duration: 1,
+    delay: delay,
+    ease: 'power3.out',
+  });
+};
+
+/**
+ * Fade in left animation
+ */
+export const fadeInLeft = (element, delay = 0) => {
+  if (!element) return null;
+
+  return gsap.from(element, {
+    x: 100,
+    opacity: 0,
+    duration: 1,
+    delay: delay,
+    ease: 'power3.out',
+  });
+};
+
+/**
+ * Fade in right animation
+ */
+export const fadeInRight = (element, delay = 0) => {
+  if (!element) return null;
+
+  return gsap.from(element, {
+    x: -100,
+    opacity: 0,
+    duration: 1,
+    delay: delay,
+    ease: 'power3.out',
+  });
+};
+
+/**
+ * Fade in down animation
+ */
+export const fadeInDown = (element, delay = 0) => {
+  if (!element) return null;
+
+  return gsap.from(element, {
+    y: -60,
+    opacity: 0,
+    duration: 1,
+    delay: delay,
+    ease: 'power3.out',
+  });
+};
+
+/**
+ * Scale in animation
+ */
+export const scaleIn = (element, delay = 0) => {
+  if (!element) return null;
+
+  return gsap.from(element, {
+    scale: 0.8,
+    opacity: 0,
+    duration: 0.8,
+    delay: delay,
+    ease: 'back.out(1.7)',
+  });
+};
+
+/**
+ * Stagger fade in animation for multiple elements
+ */
+export const staggerFadeIn = (elements, staggerAmount = 0.1) => {
+  if (!elements || elements.length === 0) return null;
+
+  return gsap.from(elements, {
+    y: 30,
+    opacity: 0,
+    duration: 0.8,
+    stagger: staggerAmount,
+    ease: 'power2.out',
+  });
+};
