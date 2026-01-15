@@ -6,7 +6,6 @@ const heroSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Remove old subtitle field completely
   subtitles: {
     type: [String],
     default: ['Full Stack Developer'],
@@ -20,6 +19,11 @@ const heroSchema = new mongoose.Schema({
   backgroundImage: {
     url: String,
     publicId: String,
+  },
+  resume: {
+    url: String,
+    publicId: String,
+    fileName: String,
   },
   ctaText: String,
   ctaLink: String,
@@ -46,7 +50,7 @@ const heroSchema = new mongoose.Schema({
   }
 }, { 
   timestamps: true,
-  strict: false // Allow extra fields during migration
+  strict: false
 });
 
 export default mongoose.model('Hero', heroSchema);

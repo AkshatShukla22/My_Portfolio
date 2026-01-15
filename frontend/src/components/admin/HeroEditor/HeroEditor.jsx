@@ -24,6 +24,7 @@ const HeroEditor = () => {
   });
   const [profileImage, setProfileImage] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null);
+  const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [newSubtitle, setNewSubtitle] = useState('');
@@ -56,6 +57,7 @@ const HeroEditor = () => {
       });
       setProfileImage(hero.profileImage);
       setBackgroundImage(hero.backgroundImage);
+      setResume(hero.resume);
     }
   }, [hero]);
 
@@ -109,6 +111,7 @@ const HeroEditor = () => {
       ...formData,
       profileImage,
       backgroundImage,
+      resume,
     };
 
     console.log('📤 Sending payload:', payload);
@@ -240,7 +243,7 @@ const HeroEditor = () => {
         </div>
 
         <div className={styles.formSection}>
-          <h3>Images</h3>
+          <h3>Images & Files</h3>
           
           <div className={styles.formGroup}>
             <label>Profile Image</label>
@@ -258,6 +261,29 @@ const HeroEditor = () => {
               onUploadSuccess={(result) => setBackgroundImage(result)}
               currentImage={backgroundImage}
             />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label>Resume/CV (PDF or Document)</label>
+            <FileUploader
+              folder="resume"
+              onUploadSuccess={(result) => setResume(result)}
+              currentImage={resume}
+              acceptedFormats=".pdf,.doc,.docx,image/*"
+            />
+            {resume?.url && (
+              <div className={styles.resumePreview}>
+                <span>📄 Resume uploaded</span>
+                <a 
+                  href={resume.url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={styles.previewLink}
+                >
+                  View Resume
+                </a>
+              </div>
+            )}
           </div>
         </div>
 

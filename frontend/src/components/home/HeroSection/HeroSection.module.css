@@ -3,10 +3,13 @@
 .hero {
   position: relative;
   min-height: 100vh;
+  height: 100vh; /* Fixed height */
   display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--spacing-lg) var(--spacing-md);
+  padding-top: calc(80px + var(--spacing-lg)); /* Add padding for navbar (assuming navbar is ~80px) */
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .background {
@@ -17,6 +20,7 @@
   height: 100%;
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
   opacity: 0.1;
   z-index: -1;
 }
@@ -116,6 +120,31 @@
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
 }
 
+/* Resume Button */
+.resumeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: var(--transition-normal);
+  margin-bottom: var(--spacing-md);
+}
+
+.resumeButton:hover {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
 .cta {
   display: inline-block;
   padding: 1rem 2.5rem;
@@ -192,36 +221,6 @@
   font-size: 1.2rem;
 }
 
-/* 3D Model Container - PROPERLY CONTAINED */
-.modelContainer {
-  position: absolute;
-  top: 50%;
-  right: 5%;
-  transform: translateY(-50%);
-  width: 350px;
-  height: 350px;
-  pointer-events: none;
-  opacity: 0.6;
-  z-index: 1;
-}
-
-@media (min-width: 1440px) {
-  .modelContainer {
-    right: 8%;
-    width: 400px;
-    height: 400px;
-  }
-}
-
-@media (max-width: 1200px) {
-  .modelContainer {
-    right: 2%;
-    width: 320px;
-    height: 320px;
-    opacity: 0.5;
-  }
-}
-
 @media (max-width: 1024px) {
   .heroContent {
     grid-template-columns: 1fr;
@@ -237,10 +236,6 @@
     order: -1;
   }
 
-  .modelContainer {
-    display: none; /* Hide on tablet and below to avoid issues */
-  }
-
   .socialLinks {
     justify-content: center;
   }
@@ -253,10 +248,7 @@
 @media (max-width: 768px) {
   .hero {
     padding: var(--spacing-md) var(--spacing-sm);
-  }
-
-  .modelContainer {
-    display: none;
+    padding-top: calc(70px + var(--spacing-md)); /* Adjust for smaller navbar on mobile */
   }
 
   .profileImage,
@@ -267,8 +259,8 @@
 }
 
 @media (max-width: 480px) {
-  .modelContainer {
-    display: none;
+  .hero {
+    padding-top: calc(60px + var(--spacing-sm)); /* Even smaller navbar padding */
   }
   
   .profileImage,

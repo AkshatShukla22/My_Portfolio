@@ -21,7 +21,6 @@ export const getHero = async (req, res) => {
       if (hero.subtitle && (!hero.subtitles || hero.subtitles.length === 0)) {
         console.log('🔄 Migrating old subtitle to subtitles array');
         hero.subtitles = [hero.subtitle];
-        // Remove old subtitle field
         hero.subtitle = undefined;
         await hero.save();
       }
@@ -31,7 +30,7 @@ export const getHero = async (req, res) => {
       id: hero._id,
       title: hero.title,
       subtitles: hero.subtitles,
-      hasOldSubtitle: !!hero.subtitle
+      hasResume: !!hero.resume?.url
     });
 
     res.json({
@@ -64,8 +63,12 @@ export const updateHero = async (req, res) => {
       if (req.body.backgroundImage && hero.backgroundImage?.publicId) {
         await deleteFromCloudinary(hero.backgroundImage.publicId);
       }
+      // Handle resume deletion if new resume is uploaded
+      if (req.body.resume && hero.resume?.publicId) {
+        await deleteFromCloudinary(hero.resume.publicId);
+      }
 
-      // IMPORTANT: Update all fields
+      // Update all fields
       hero.title = req.body.title || hero.title;
       hero.subtitles = req.body.subtitles || hero.subtitles;
       hero.description = req.body.description;
@@ -73,6 +76,7 @@ export const updateHero = async (req, res) => {
       hero.ctaLink = req.body.ctaLink;
       hero.profileImage = req.body.profileImage || hero.profileImage;
       hero.backgroundImage = req.body.backgroundImage || hero.backgroundImage;
+      hero.resume = req.body.resume || hero.resume;
       hero.model3D = req.body.model3D || hero.model3D;
       hero.animations = req.body.animations || hero.animations;
       
@@ -86,6 +90,7 @@ export const updateHero = async (req, res) => {
       id: hero._id,
       title: hero.title,
       subtitles: hero.subtitles,
+      hasResume: !!hero.resume?.url
     });
     
     res.json({

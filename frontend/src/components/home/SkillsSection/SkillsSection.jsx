@@ -93,7 +93,7 @@ const SkillsSection = ({ data }) => {
           </div>
         ) : (
           <>
-            {/* Marquee: Shows icons first, then images */}
+            {/* Marquee: Shows Font Awesome icons first, then images */}
             <LogoMarquee skills={skillsArray.filter((s) => s.displayInMarquee !== false)} />
 
             {/* Categorized skills grid */}
@@ -131,15 +131,11 @@ const SkillsSection = ({ data }) => {
                                 backgroundClip: 'text',
                               }}
                             ></i>
-                          ) : null}
-                          
-                          {/* Fallback placeholder */}
-                          <div 
-                            className={`${styles.placeholderLogo} fallback`}
-                            style={{ display: (skill.logo?.url || skill.fontAwesomeIcon) ? 'none' : 'flex' }}
-                          >
-                            {skill.name.charAt(0).toUpperCase()}
-                          </div>
+                          ) : (
+                            <div className={`${styles.placeholderLogo} fallback`}>
+                              {skill.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
 
                           <span className={styles.skillName}>{skill.name}</span>
                           

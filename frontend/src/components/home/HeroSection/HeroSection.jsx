@@ -1,8 +1,7 @@
 // frontend/src/components/home/HeroSection/HeroSection.jsx
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Github, Linkedin, Twitter, Mail, Globe, Code2, Award } from 'lucide-react';
-import Hero3DModel from './Hero3DModel';
+import { Github, Linkedin, Twitter, Mail, Globe, Code2, FileText } from 'lucide-react';
 import { useContent } from '../../../context/ContentContext';
 import styles from './HeroSection.module.css';
 import { fadeInUp, fadeInLeft } from '../../../utils/animations';
@@ -73,6 +72,9 @@ const HeroSection = ({ data }) => {
   }, [data?.subtitles, subtitleIndex]);
 
   useEffect(() => {
+    // Only run animation once when component mounts and data is available
+    if (!data) return;
+
     const ctx = gsap.context(() => {
       if (titleRef.current) fadeInUp(titleRef.current, 0.3);
       if (subtitleRef.current) fadeInUp(subtitleRef.current, 0.5);
@@ -82,7 +84,8 @@ const HeroSection = ({ data }) => {
     }, heroRef);
 
     return () => ctx.revert();
-  }, [data]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array - run only once on mount
 
   // Get icon for social link
   const getSocialIcon = (platform) => {
@@ -141,6 +144,20 @@ const HeroSection = ({ data }) => {
             </div>
           )}
 
+          {/* Resume Button */}
+          {data?.resume?.url && (
+            <a
+              href={data.resume.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.resumeButton}
+              title="View Resume"
+            >
+              <FileText size={20} />
+              <span>View Resume</span>
+            </a>
+          )}
+
           {data?.ctaText && data?.ctaLink && (
             <a 
               ref={ctaRef}
@@ -166,13 +183,6 @@ const HeroSection = ({ data }) => {
           )}
         </div>
       </div>
-
-      {/* Three.js 3D Model */}
-      {data?.model3D && (
-        <div className={styles.modelContainer}>
-          <Hero3DModel type={data.model3D.type || 'cube'} />
-        </div>
-      )}
 
       {/* Background */}
       {data?.backgroundImage?.url && (
