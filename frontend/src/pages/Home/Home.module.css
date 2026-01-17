@@ -33,7 +33,6 @@
   scroll-behavior: smooth;
 }
 
-/* Override any GSAP transforms that might hide sections */
 [style*="transform: translate"] {
   will-change: transform;
 }
