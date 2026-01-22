@@ -1,6 +1,5 @@
 /* frontend/src/styles/animations.css */
 
-/* Fade Animations */
 @keyframes fadeIn {
   from {
     opacity: 0;
