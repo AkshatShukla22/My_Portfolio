@@ -2,7 +2,6 @@
 
 /* Mobile First Approach */
 
-/* Extra Small Devices (phones, less than 640px) */
 @media (max-width: 639px) {
   :root {
     --spacing-xs: 0.375rem;
