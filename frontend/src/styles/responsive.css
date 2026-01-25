@@ -34,7 +34,6 @@
   }
 }
 
-/* Medium Devices (tablets, 768px and up) */
 @media (min-width: 768px) {
   .container {
     max-width: var(--container-md);
