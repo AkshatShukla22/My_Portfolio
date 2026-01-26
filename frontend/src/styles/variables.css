@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  /* Colors - These will be updated dynamically from theme API */
   --primary-color: #6366f1;
   --secondary-color: #8b5cf6;
   --accent-color: #ec4899;
