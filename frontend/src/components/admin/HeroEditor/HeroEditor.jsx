@@ -21,10 +21,13 @@ const HeroEditor = () => {
       titleAnimation: 'fadeInUp',
       imageAnimation: 'fadeIn',
     },
+    resume: {
+      googleDriveLink: '',
+      downloadLink: '',
+    },
   });
   const [profileImage, setProfileImage] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState(null);
-  const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [newSubtitle, setNewSubtitle] = useState('');
@@ -54,10 +57,13 @@ const HeroEditor = () => {
           titleAnimation: 'fadeInUp',
           imageAnimation: 'fadeIn',
         },
+        resume: hero.resume || {
+          googleDriveLink: '',
+          downloadLink: '',
+        },
       });
       setProfileImage(hero.profileImage);
       setBackgroundImage(hero.backgroundImage);
-      setResume(hero.resume);
     }
   }, [hero]);
 
@@ -102,6 +108,46 @@ const HeroEditor = () => {
     });
   };
 
+  // Helper function to convert Google Drive sharing link to direct view/download links
+  const convertGoogleDriveLink = (link) => {
+    if (!link) return { googleDriveLink: '', downloadLink: '' };
+    
+    // Extract file ID from various Google Drive link formats
+    let fileId = '';
+    
+    // Format: https://drive.google.com/file/d/FILE_ID/view?usp=sharing
+    const match1 = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    // Format: https://drive.google.com/open?id=FILE_ID
+    const match2 = link.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    
+    if (match1) {
+      fileId = match1[1];
+    } else if (match2) {
+      fileId = match2[1];
+    } else {
+      // Assume the link is already a file ID
+      fileId = link;
+    }
+    
+    return {
+      googleDriveLink: `https://drive.google.com/file/d/${fileId}/view`,
+      downloadLink: `https://drive.google.com/uc?export=download&id=${fileId}`,
+    };
+  };
+
+  const handleResumeChange = (e) => {
+    const link = e.target.value;
+    const { googleDriveLink, downloadLink } = convertGoogleDriveLink(link);
+    
+    setFormData({
+      ...formData,
+      resume: {
+        googleDriveLink,
+        downloadLink,
+      },
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -111,7 +157,6 @@ const HeroEditor = () => {
       ...formData,
       profileImage,
       backgroundImage,
-      resume,
     };
 
     console.log('📤 Sending payload:', payload);
@@ -264,24 +309,34 @@ const HeroEditor = () => {
           </div>
 
           <div className={styles.formGroup}>
-            <label>Resume/CV (PDF or Document)</label>
-            <FileUploader
-              folder="resume"
-              onUploadSuccess={(result) => setResume(result)}
-              currentImage={resume}
-              acceptedFormats=".pdf,.doc,.docx,image/*"
+            <label>Resume (Google Drive Link)</label>
+            <input
+              type="text"
+              value={formData.resume.googleDriveLink}
+              onChange={handleResumeChange}
+              placeholder="Paste your Google Drive sharing link here"
+              className={styles.input}
             />
-            {resume?.url && (
+            {formData.resume.googleDriveLink && (
               <div className={styles.resumePreview}>
-                <span>📄 Resume uploaded</span>
+                <span>📄 Resume link configured</span>
                 <a 
-                  href={resume.url} 
+                  href={formData.resume.googleDriveLink} 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className={styles.previewLink}
                 >
                   View Resume
                 </a>
+                {formData.resume.downloadLink && (
+                  <a 
+                    href={formData.resume.downloadLink} 
+                    download
+                    className={styles.previewLink}
+                  >
+                    Download Resume
+                  </a>
+                )}
               </div>
             )}
           </div>

@@ -1,7 +1,7 @@
 // frontend/src/components/home/HeroSection/HeroSection.jsx
 import { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import { Github, Linkedin, Twitter, Mail, Globe, Code2, FileText } from 'lucide-react';
+import { Github, Linkedin, Twitter, Mail, Globe, Code2 } from 'lucide-react';
 import { useContent } from '../../../context/ContentContext';
 import styles from './HeroSection.module.css';
 import { fadeInUp, fadeInLeft } from '../../../utils/animations';
@@ -16,6 +16,7 @@ const HeroSection = ({ data }) => {
   const ctaRef = useRef(null);
   const [currentSubtitle, setCurrentSubtitle] = useState('');
   const [subtitleIndex, setSubtitleIndex] = useState(0);
+  const [showDownload, setShowDownload] = useState(false);
 
   // Letter-by-letter animation for subtitles
   useEffect(() => {
@@ -126,37 +127,56 @@ const HeroSection = ({ data }) => {
             </p>
           )}
 
-          {/* Social Links */}
-          {contact?.socialLinks && contact.socialLinks.length > 0 && (
-            <div className={styles.socialLinks}>
-              {contact.socialLinks.map((link, index) => (
+          {/* Social Links and Resume */}
+          <div className={styles.socialLinks}>
+            {contact?.socialLinks && contact.socialLinks.length > 0 && (
+              <>
+                {contact.socialLinks.map((link, index) => (
+                  <a
+                    key={index}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.socialLink}
+                    title={link.platform}
+                  >
+                    {getSocialIcon(link.platform)}
+                  </a>
+                ))}
+              </>
+            )}
+            
+            {/* Resume Icon Button */}
+            {data?.resume?.googleDriveLink && (
+              <div 
+                className={styles.resumeWrapper}
+                onMouseEnter={() => setShowDownload(true)}
+                onMouseLeave={() => setShowDownload(false)}
+              >
                 <a
-                  key={index}
-                  href={link.url}
+                  href={data.resume.googleDriveLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.socialLink}
-                  title={link.platform}
+                  title="View Resume"
                 >
-                  {getSocialIcon(link.platform)}
+                  <i className="fas fa-file-pdf"></i>
                 </a>
-              ))}
-            </div>
-          )}
-
-          {/* Resume Button */}
-          {data?.resume?.url && (
-            <a
-              href={data.resume.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.resumeButton}
-              title="View Resume"
-            >
-              <FileText size={20} />
-              <span>View Resume</span>
-            </a>
-          )}
+                
+                {/* Download button shown on hover */}
+                {showDownload && data?.resume?.downloadLink && (
+                  <a
+                    href={data.resume.downloadLink}
+                    download
+                    className={`${styles.socialLink} ${styles.downloadLink}`}
+                    title="Download Resume"
+                  >
+                    <i className="fas fa-download"></i>
+                  </a>
+                )}
+              </div>
+            )}
+          </div>
 
           {data?.ctaText && data?.ctaLink && (
             <a 

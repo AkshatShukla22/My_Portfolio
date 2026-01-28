@@ -21,9 +21,8 @@ const heroSchema = new mongoose.Schema({
     publicId: String,
   },
   resume: {
-    url: String,
-    publicId: String,
-    fileName: String,
+    googleDriveLink: String,
+    downloadLink: String,
   },
   ctaText: String,
   ctaLink: String,

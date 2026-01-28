@@ -30,7 +30,7 @@ export const getHero = async (req, res) => {
       id: hero._id,
       title: hero.title,
       subtitles: hero.subtitles,
-      hasResume: !!hero.resume?.url
+      hasResume: !!hero.resume?.googleDriveLink
     });
 
     res.json({
@@ -63,10 +63,6 @@ export const updateHero = async (req, res) => {
       if (req.body.backgroundImage && hero.backgroundImage?.publicId) {
         await deleteFromCloudinary(hero.backgroundImage.publicId);
       }
-      // Handle resume deletion if new resume is uploaded
-      if (req.body.resume && hero.resume?.publicId) {
-        await deleteFromCloudinary(hero.resume.publicId);
-      }
 
       // Update all fields
       hero.title = req.body.title || hero.title;
@@ -90,7 +86,7 @@ export const updateHero = async (req, res) => {
       id: hero._id,
       title: hero.title,
       subtitles: hero.subtitles,
-      hasResume: !!hero.resume?.url
+      hasResume: !!hero.resume?.googleDriveLink
     });
     
     res.json({

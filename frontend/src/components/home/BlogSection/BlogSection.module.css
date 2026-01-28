@@ -31,10 +31,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: var(--spacing-md);
+  align-items: start;
 }
 
 .blogCard {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: var(--radius-lg);
@@ -43,19 +44,56 @@
   transition: var(--transition-normal);
   display: flex;
   flex-direction: column;
+  min-height: 400px;
+  max-height: 650px;
+  position: relative;
+}
+
+.blogCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(99, 102, 241, 0.05) 0%,
+    rgba(168, 85, 247, 0.05) 100%
+  );
+  opacity: 0;
+  transition: var(--transition-normal);
+  pointer-events: none;
+}
+
+.blogCard:hover::before {
+  opacity: 1;
 }
 
 .blogCard:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 40px rgba(99, 102, 241, 0.3);
-  border-color: var(--primary-color);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.25);
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .blogImage {
   width: 100%;
-  height: 200px;
+  height: 220px;
   overflow: hidden;
   position: relative;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+  flex-shrink: 0;
+}
+
+.blogImage::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+  pointer-events: none;
 }
 
 .blogImage img {
@@ -63,10 +101,12 @@
   height: 100%;
   object-fit: cover;
   transition: var(--transition-slow);
+  opacity: 1;
+  display: block;
 }
 
 .blogCard:hover .blogImage img {
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
 .blogContent {
@@ -74,49 +114,124 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  gap: var(--spacing-sm);
+  overflow: hidden;
 }
 
 .blogContent h3 {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--text-color);
-  margin-bottom: var(--spacing-sm);
-  line-height: 1.4;
+  margin: 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 2.6em;
 }
 
 .blogContent p {
   color: var(--text-secondary);
   line-height: 1.6;
-  margin-bottom: var(--spacing-md);
+  font-size: 0.95rem;
   flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
 }
 
 .tags {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: 0.5rem;
   flex-wrap: wrap;
-  margin-bottom: var(--spacing-sm);
+  margin-top: auto;
 }
 
 .tag {
-  background: rgba(99, 102, 241, 0.1);
+  background: rgba(99, 102, 241, 0.15);
   color: var(--primary-color);
-  padding: 0.3rem 0.75rem;
-  border-radius: 15px;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  transition: var(--transition-normal);
+  white-space: nowrap;
+}
+
+.blogCard:hover .tag {
+  background: rgba(99, 102, 241, 0.25);
+  border-color: rgba(99, 102, 241, 0.4);
 }
 
 .blogMeta {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: 0.5rem;
   align-items: center;
   color: var(--text-secondary);
   font-size: 0.85rem;
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  opacity: 0.8;
+}
+
+.blogMeta span:nth-child(2) {
+  opacity: 0.5;
+}
+
+/* Card without image */
+.blogCard:not(:has(.blogImage)) {
+  min-height: 320px;
+}
+
+.blogCard:not(:has(.blogImage)) .blogContent {
+  padding-top: var(--spacing-lg);
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .blogGrid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
   .blogGrid {
     grid-template-columns: 1fr;
+  }
+  
+  .blogCard {
+    min-height: 380px;
+    max-height: 600px;
+  }
+  
+  .blogImage {
+    height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blogCard {
+    min-height: 350px;
+    max-height: 550px;
+  }
+  
+  .blogImage {
+    height: 180px;
+  }
+  
+  .blogContent h3 {
+    font-size: 1.3rem;
+  }
+  
+  .blogContent p {
+    font-size: 0.9rem;
+    -webkit-line-clamp: 2;
   }
 }
