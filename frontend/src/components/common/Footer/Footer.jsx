@@ -140,12 +140,7 @@ const Footer = () => {
         </div>
 
         <div className={styles.footerBottom}>
-          <p>&copy; {currentYear} Portfolio. All rights reserved.</p>
-          <div className={styles.footerLinks}>
-            <Link to="/privacy">Privacy Policy</Link>
-            <span>•</span>
-            <Link to="/terms">Terms of Service</Link>
-          </div>
+          
         </div>
       </div>
 

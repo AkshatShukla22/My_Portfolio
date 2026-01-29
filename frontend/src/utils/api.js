@@ -8,10 +8,10 @@ const api = axios.create({
   },
 });
 
-// Request interceptor - Add token to requests
+// Request interceptor to add token to all requests
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('adminToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -22,17 +22,22 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor - Handle errors globally
+// Response interceptor to handle errors globally
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Handle 401 Unauthorized
+    // Handle 401 Unauthorized errors
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
+      // Token expired or invalid
+      localStorage.removeItem('adminToken');
       localStorage.removeItem('user');
-      window.location.href = '/admin/login';
+      
+      // Only redirect if not already on login page
+      if (window.location.pathname !== '/admin') {
+        window.location.href = '/admin';
+      }
     }
-
+    
     // Handle 403 Forbidden
     if (error.response?.status === 403) {
       console.error('Access forbidden');
@@ -52,7 +57,7 @@ api.interceptors.response.use(
     if (!error.response) {
       console.error('Network error - please check your connection');
     }
-
+    
     return Promise.reject(error);
   }
 );

@@ -1,14 +1,10 @@
-// frontend/src/pages/Admin/AdminLogin.jsx
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Admin.module.css';
 
 const AdminLogin = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -21,25 +17,18 @@ const AdminLogin = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-    setError('');
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
 
-    const result = await login(formData.email, formData.password);
+    const result = await login(password);
 
     if (result.success) {
       navigate('/admin/dashboard');
     } else {
-      setError(result.message || 'Login failed. Please try again.');
+      setError(result.message || 'Authentication failed. Please try again.');
+      setPassword(''); // Clear password field on error
     }
 
     setLoading(false);
@@ -49,8 +38,22 @@ const AdminLogin = () => {
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
         <div className={styles.loginCard}>
-          <h1 className={styles.loginTitle}>Admin Login</h1>
-          <p className={styles.loginSubtitle}>Enter your credentials to continue</p>
+          <div className={styles.lockIcon}>
+            <svg 
+              width="48" 
+              height="48" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              stroke="currentColor" 
+              strokeWidth="2"
+            >
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+
+          <h1 className={styles.loginTitle}>Admin Access</h1>
+          <p className={styles.loginSubtitle}>Enter password to continue</p>
 
           {error && (
             <div className={styles.errorMessage}>
@@ -60,41 +63,40 @@ const AdminLogin = () => {
 
           <form onSubmit={handleSubmit} className={styles.loginForm}>
             <div className={styles.formGroup}>
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="admin@example.com"
-                autoComplete="email"
-              />
-            </div>
-
-            <div className={styles.formGroup}>
               <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setError('');
+                }}
                 required
                 placeholder="••••••••"
                 autoComplete="current-password"
+                autoFocus
               />
             </div>
 
             <button
               type="submit"
               className={styles.loginButton}
-              disabled={loading}
+              disabled={loading || !password}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? 'Verifying...' : 'Access Dashboard'}
             </button>
           </form>
+
+          <div className={styles.loginFooter}>
+            <button 
+              onClick={() => navigate('/')}
+              className={styles.backButton}
+            >
+              ← Back to Portfolio
+            </button>
+          </div>
         </div>
       </div>
     </div>

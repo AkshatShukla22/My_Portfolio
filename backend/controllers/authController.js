@@ -1,88 +1,88 @@
-// backend/controllers/authController.js
-import User from '../models/User.js';
-import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
-// Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
-  });
-};
-
-// @desc    Register admin
-// @route   POST /api/auth/register
-// @access  Private (only first time or by existing admin)
-export const register = async (req, res) => {
+// @desc    Verify admin password
+// @route   POST /api/auth/verify
+// @access  Public
+export const verifyPassword = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
-
-    // Check if user exists
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-
-    // Create user
-    const user = await User.create({
-      username,
-      email,
-      password,
-    });
-
-    if (user) {
-      res.status(201).json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        token: generateToken(user._id),
+    const { password } = req.body;
+    
+    // Get the admin password from environment variable
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminPassword) {
+      return res.status(500).json({ 
+        success: false,
+        message: 'Admin password not configured' 
       });
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
-// @desc    Login admin
-// @route   POST /api/auth/login
-// @access  Public
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+    // Compare the provided password with stored hash
+    const isMatch = await bcrypt.compare(password, adminPassword);
 
-    // Check for user
-    const user = await User.findOne({ email });
-
-    if (user && (await user.comparePassword(password))) {
+    if (isMatch) {
+      // Generate a simple session token (you can use any random string)
+      const sessionToken = Buffer.from(`admin:${Date.now()}`).toString('base64');
+      
       res.json({
-        _id: user._id,
-        username: user.username,
-        email: user.email,
-        token: generateToken(user._id),
+        success: true,
+        message: 'Authentication successful',
+        token: sessionToken
       });
     } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+      res.status(401).json({ 
+        success: false,
+        message: 'Invalid password' 
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Auth error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 };
 
-// @desc    Change password
+// @desc    Change admin password
 // @route   PUT /api/auth/change-password
 // @access  Private
 export const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const user = await User.findById(req.user._id);
+    
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    
+    if (!adminPassword) {
+      return res.status(500).json({ 
+        success: false,
+        message: 'Admin password not configured' 
+      });
+    }
 
-    if (await user.comparePassword(currentPassword)) {
-      user.password = newPassword;
-      await user.save();
-      res.json({ message: 'Password updated successfully' });
+    // Verify current password
+    const isMatch = await bcrypt.compare(currentPassword, adminPassword);
+
+    if (isMatch) {
+      // Hash new password
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+      
+      res.json({
+        success: true,
+        message: 'Password updated successfully. Please update ADMIN_PASSWORD in your .env file with this hash:',
+        newPasswordHash: hashedPassword
+      });
     } else {
-      res.status(401).json({ message: 'Current password is incorrect' });
+      res.status(401).json({ 
+        success: false,
+        message: 'Current password is incorrect' 
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Password change error:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Server error' 
+    });
   }
 };

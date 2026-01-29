@@ -1,13 +1,27 @@
-// backend/routes/authRoutes.js
 import express from 'express';
-import { register, login, changePassword } from '../controllers/authController.js';
+import { verifyPassword, changePassword } from '../controllers/authController.js';
 import { protect } from '../middleware/authMiddleware.js';
-import { validate, registerValidation, loginValidation } from '../middleware/validation.js';
+import { body } from 'express-validator';
+import { validate } from '../middleware/validation.js';
 
 const router = express.Router();
 
-router.post('/register', validate(registerValidation), register);
-router.post('/login', validate(loginValidation), login);
-router.put('/change-password', protect, changePassword);
+// Password verification
+router.post('/verify', 
+  validate([
+    body('password').notEmpty().withMessage('Password is required')
+  ]),
+  verifyPassword
+);
+
+// Change password (protected route)
+router.put('/change-password', 
+  protect,
+  validate([
+    body('currentPassword').notEmpty().withMessage('Current password is required'),
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
+  ]),
+  changePassword
+);
 
 export default router;
