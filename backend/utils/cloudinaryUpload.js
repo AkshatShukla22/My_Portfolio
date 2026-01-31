@@ -4,25 +4,36 @@ import fs from 'fs';
 
 export const uploadToCloudinary = async (filePath, folder = 'portfolio') => {
   try {
-    console.log('⬆️ Uploading to Cloudinary...');
+    console.log('⬆️ Starting Cloudinary upload...');
     console.log('📁 File path:', filePath);
-    console.log('📂 Folder:', folder);
+    console.log('📂 Target folder:', folder);
+    
+    // Check if file exists before uploading
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`File not found: ${filePath}`);
+    }
+
+    const fileStats = fs.statSync(filePath);
+    console.log('📊 File size:', fileStats.size, 'bytes');
 
     const result = await cloudinary.uploader.upload(filePath, {
       folder,
       resource_type: 'auto',
-      use_filename: true,
-      unique_filename: true, // IMPORTANT: This ensures unique filenames
+      use_filename: false, // Don't use original filename
+      unique_filename: true,
+      overwrite: false, // Don't overwrite existing files
     });
 
     console.log('✅ Cloudinary upload successful');
-    console.log('🔗 URL:', result.secure_url);
+    console.log('🔗 Secure URL:', result.secure_url);
     console.log('🆔 Public ID:', result.public_id);
 
     // Delete local file after successful upload
-    if (fs.existsSync(filePath)) {
+    try {
       fs.unlinkSync(filePath);
-      console.log('🗑️ Temp file deleted');
+      console.log('🗑️ Temp file deleted:', filePath);
+    } catch (unlinkError) {
+      console.error('⚠️ Could not delete temp file:', unlinkError.message);
     }
 
     return {
@@ -30,14 +41,16 @@ export const uploadToCloudinary = async (filePath, folder = 'portfolio') => {
       publicId: result.public_id,
     };
   } catch (error) {
-    console.error('❌ Cloudinary upload failed:', error);
+    console.error('❌ Cloudinary upload failed:', error.message);
+    console.error('Error details:', error);
     
-    // Delete local file if upload fails
-    if (fs.existsSync(filePath)) {
+    // Try to delete local file even if upload fails
+    if (filePath && fs.existsSync(filePath)) {
       try {
         fs.unlinkSync(filePath);
+        console.log('🗑️ Temp file deleted after error');
       } catch (unlinkError) {
-        console.error('Failed to delete temp file:', unlinkError);
+        console.error('⚠️ Failed to delete temp file:', unlinkError.message);
       }
     }
     
@@ -47,11 +60,20 @@ export const uploadToCloudinary = async (filePath, folder = 'portfolio') => {
 
 export const deleteFromCloudinary = async (publicId) => {
   try {
+    if (!publicId) {
+      console.log('⚠️ No publicId provided for deletion');
+      return;
+    }
+
     console.log('🗑️ Deleting from Cloudinary:', publicId);
-    await cloudinary.uploader.destroy(publicId);
-    console.log('✅ Cloudinary delete successful');
+    const result = await cloudinary.uploader.destroy(publicId);
+    console.log('✅ Cloudinary delete result:', result);
+    
+    if (result.result !== 'ok' && result.result !== 'not found') {
+      console.warn('⚠️ Unexpected delete result:', result);
+    }
   } catch (error) {
-    console.error('❌ Cloudinary deletion error:', error);
-    // Don't throw error, just log it
+    console.error('❌ Cloudinary deletion error:', error.message);
+    // Don't throw error for deletion failures
   }
 };
