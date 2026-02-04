@@ -58,8 +58,14 @@ const ContactSection = () => {
     setLoading(true);
     setStatus({ type: '', message: '' });
 
+    // Add debugging
+    console.log('📧 Submitting contact form...', formData);
+
     try {
-      await api.post('/contact/submit', formData);
+      // Make the API call with better error handling
+      const response = await api.post('/contact/submit', formData);
+      
+      console.log('✅ Contact form response:', response.data);
 
       setStatus({
         type: 'success',
@@ -73,9 +79,27 @@ const ContactSection = () => {
         message: '',
       });
     } catch (error) {
+      // Enhanced error logging
+      console.error('❌ Contact form error:', error);
+      console.error('Error response:', error.response);
+      console.error('Error message:', error.message);
+      
+      let errorMessage = 'Failed to send message. Please try again.';
+      
+      if (error.response) {
+        // Server responded with error
+        errorMessage = error.response.data?.message || `Server error: ${error.response.status}`;
+      } else if (error.request) {
+        // Request made but no response
+        errorMessage = 'No response from server. Please check your connection.';
+      } else {
+        // Something else happened
+        errorMessage = error.message || 'An unexpected error occurred.';
+      }
+
       setStatus({
         type: 'error',
-        message: error.response?.data?.message || 'Failed to send message. Please try again.',
+        message: errorMessage,
       });
     } finally {
       setLoading(false);
@@ -258,7 +282,6 @@ const ContactSection = () => {
                       className={styles.socialIcon}
                       title={link.platform}
                     >
-                      {/* ✅ FIXED: Use helper function to get correct icon class */}
                       <i className={getIconClassName(link.platform, link.icon)}></i>
                     </a>
                   ))}
