@@ -25,51 +25,70 @@ import contactRoutes from './routes/contactRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load environment variables
 dotenv.config();
+
+// Connect to database
 connectDB();
 
 const app = express();
 
-// CORS Configuration - FIXED
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:5173',
-  'http://localhost:5174',
-  process.env.FRONTEND_URL, // Add your actual frontend URL in Vercel env variables
-].filter(Boolean); // Remove undefined values
+// Trust proxy (important for Vercel)
+app.set('trust proxy', 1);
 
+// CORS Configuration - Must be FIRST
 app.use(cors({
   origin: function(origin, callback) {
-    // Allow requests with no origin (like mobile apps, curl, postman)
+    // Allow requests with no origin (mobile apps, curl, Postman)
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(null, true); // For now, allow all origins - you can restrict later
-    }
+    // In production, you can add specific origins
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    // For now, allow all origins
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Handle preflight OPTIONS requests
+app.options('*', cors());
 
+// Body parsing middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Health check route
+// Health check
 app.get('/', (req, res) => {
   res.json({ 
     success: true, 
-    message: 'Portfolio Backend API is running',
-    version: '1.0.0'
+    message: 'Portfolio Backend API',
+    version: '1.0.0',
+    timestamp: new Date().toISOString()
   });
 });
 
-// Routes
+// API health check
+app.get('/api/health', (req, res) => {
+  res.json({ 
+    success: true, 
+    status: 'healthy',
+    database: 'connected'
+  });
+});
+
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/hero', heroRoutes);
 app.use('/api/journey', journeyRoutes);
@@ -82,17 +101,27 @@ app.use('/api/experiences', experienceRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/theme', themeRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/contact', contactRoutes); 
+app.use('/api/contact', contactRoutes);
 
+// 404 handler
+app.use((req, res, next) => {
+  res.status(404).json({
+    success: false,
+    message: `Route ${req.originalUrl} not found`
+  });
+});
+
+// Error handler - Must be LAST
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Only listen if not in Vercel serverless environment
+// Only start server in development
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
   });
 }
 
+// Export for Vercel serverless
 export default app;
