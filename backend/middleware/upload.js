@@ -3,11 +3,16 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
+const uploadsDir = process.env.VERCEL ? '/tmp/uploads/' : 'uploads/';
+
 // Ensure uploads directory exists
-const uploadsDir = 'uploads/';
 if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-  console.log('📁 Created uploads directory');
+  try {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('📁 Created uploads directory:', uploadsDir);
+  } catch (error) {
+    console.error('⚠️ Could not create uploads directory:', error.message);
+  }
 }
 
 // Configure multer for temporary storage
@@ -39,7 +44,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 } 
 });
 
 export default upload;
