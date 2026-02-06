@@ -25,51 +25,28 @@ import contactRoutes from './routes/contactRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
 dotenv.config();
-
-// Connect to database
-connectDB();
 
 const app = express();
 
-// Trust proxy (important for Vercel)
 app.set('trust proxy', 1);
 
-// CORS Configuration - Must be FIRST
+// CORS - Allow all origins
 app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
-    
-    // In production, you can add specific origins
-    const allowedOrigins = [
-      'http://localhost:3000',
-      'http://localhost:5173',
-      process.env.FRONTEND_URL
-    ].filter(Boolean);
-    
-    // For now, allow all origins
-    callback(null, true);
-  },
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 86400 // 24 hours
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Handle preflight OPTIONS requests
 app.options('*', cors());
 
-// Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Health check
+// Health check (no DB)
 app.get('/', (req, res) => {
   res.json({ 
     success: true, 
@@ -79,13 +56,37 @@ app.get('/', (req, res) => {
   });
 });
 
-// API health check
-app.get('/api/health', (req, res) => {
-  res.json({ 
-    success: true, 
-    status: 'healthy',
-    database: 'connected'
-  });
+// DB health check
+app.get('/api/health', async (req, res) => {
+  try {
+    await connectDB();
+    res.json({ 
+      success: true, 
+      status: 'healthy',
+      database: 'connected'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      status: 'unhealthy',
+      database: 'disconnected',
+      error: error.message
+    });
+  }
+});
+
+// Connect to DB before API routes
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Database connection failed',
+      error: error.message
+    });
+  }
 });
 
 // API Routes
@@ -104,24 +105,22 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
 
 // 404 handler
-app.use((req, res, next) => {
+app.use((req, res) => {
   res.status(404).json({
     success: false,
     message: `Route ${req.originalUrl} not found`
   });
 });
 
-// Error handler - Must be LAST
+// Error handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Only start server in development
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
   });
 }
 
-// Export for Vercel serverless
 export default app;
