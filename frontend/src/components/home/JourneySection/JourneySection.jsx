@@ -133,9 +133,9 @@ const JourneySection = ({ data }) => {
                     {isTop && (
                       <div className={styles.stepMarker}>
                         {step.icon && step.icon.startsWith('fa') ? (
-                          <i className={step.icon}></i>
+                          <i className={step.icon} aria-hidden="true"></i>
                         ) : (
-                          <i className="fas fa-graduation-cap"></i>
+                          <i className="fas fa-graduation-cap" aria-hidden="true"></i>
                         )}
                       </div>
                     )}
@@ -153,13 +153,20 @@ const JourneySection = ({ data }) => {
                         <span 
                           className={styles.seeMoreText}
                           onClick={() => toggleExpand(stepId)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              toggleExpand(stepId);
+                            }
+                          }}
                         >
                           {isExpanded ? 'See less' : 'See more'}
                         </span>
                       )}
                       {step.percentage != null && (
                         <div className={styles.percentageBadge}>
-                          <i className="fas fa-award"></i> {step.percentage}%
+                          <i className="fas fa-award" aria-hidden="true"></i> {step.percentage}%
                         </div>
                       )}
                       {step.image?.url && (
@@ -175,9 +182,9 @@ const JourneySection = ({ data }) => {
                     {!isTop && (
                       <div className={styles.stepMarker}>
                         {step.icon && step.icon.startsWith('fa') ? (
-                          <i className={step.icon}></i>
+                          <i className={step.icon} aria-hidden="true"></i>
                         ) : (
-                          <i className="fas fa-graduation-cap"></i>
+                          <i className="fas fa-graduation-cap" aria-hidden="true"></i>
                         )}
                       </div>
                     )}

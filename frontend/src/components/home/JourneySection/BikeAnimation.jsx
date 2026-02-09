@@ -63,7 +63,7 @@ const BikeAnimation = ({ bikeImage, bikeIcon = 'fas fa-bicycle', speed = 1, cont
         <img src={bikeImage} alt="Journey" />
       ) : (
         <div className={styles.defaultBike}>
-          <i className={bikeIcon}></i>
+          <i className={bikeIcon} aria-hidden="true"></i>
         </div>
       )}
     </div>

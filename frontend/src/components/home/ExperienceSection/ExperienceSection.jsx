@@ -290,7 +290,7 @@ const ExperienceSection = ({ data }) => {
       </div>
 
       {/* Add keyframe animation for pulse effect */}
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
           50% { opacity: 0.5; }
